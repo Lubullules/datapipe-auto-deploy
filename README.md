@@ -9,6 +9,7 @@
 ### 1. Architecture and Technologies
 
 #### Data Flow
+
 1. **Collection**: Retrieve raw data from a public API.
 2. **Transformation & Cleaning**: Process data using AWS Step Functions, Lambda, and Jsonata.
 3. **Storage & Ingestion**: Store cleaned data in an S3 bucket and ingest it into Snowflake via Snowpipe.
@@ -20,6 +21,7 @@
 ⸻
 
 ### 2. Project Organization
+
 - **Mono-repository GitHub**: A single structured repo with dedicated folders:
   - `terraform/` → AWS and Snowflake infrastructure
   - `etl/` → Lambda and Step Functions code
@@ -32,12 +34,14 @@
 ### 3. Pipeline Details
 
 #### Data Collection
+
 - **Selected public API**: [To be defined, e.g., OpenWeather, CoinGecko]
 - **Data format**: JSON
 - **Authentication**: API key stored in AWS Secrets Manager
 - **Frequency**: Hourly extraction using AWS EventBridge + Lambda
 
 #### Data Processing & Cleaning (ETL)
+
 - **Technologies**: AWS Step Functions orchestrating Lambdas with Jsonata
 - **Applied transformations**:
   - Removing unnecessary columns
@@ -50,11 +54,13 @@
   - **File naming convention**: `dataset_YYYYMMDD_HHMM.parquet`
 
 #### Ingestion into Snowflake
+
 - **Snowpipe** for automatic ingestion when a file arrives in S3
 - **Landing schema** to store raw data
 - **Ingestion policy**: Append-only with timestamp
 
 #### Transformation with DBT
+
 - **Staging schema**:
   - Data type normalization
   - Deduplication and primary key management
@@ -68,6 +74,7 @@
   - **DBT snapshots** to track changes
 
 #### Visualization with Tableau
+
 - Direct connection to Snowflake
 - Dynamic dashboard creation
 - Role-based access management and sharing
@@ -75,6 +82,7 @@
 ⸻
 
 ### 4. Deployment & Automation
+
 - **Infrastructure as Code with Terraform**
 - **AWS resource provisioning** (Lambda, Step Functions, S3, Snowpipe)
 - **Snowflake schema and table configuration**
