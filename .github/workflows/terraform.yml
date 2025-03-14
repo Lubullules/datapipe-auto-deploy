@@ -5,14 +5,10 @@ on:
    branches:
    - main
    - dev
-   paths:
-   - terraform/**
  pull_request:
    branches:
    - main
    - dev
-   paths:
-   - terraform/**
 
 env:
  ENV_FILE: .config/.env.${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
