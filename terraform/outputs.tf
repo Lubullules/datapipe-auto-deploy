@@ -1,5 +1,5 @@
-output project_name {
-  value       = var.project_name
+output "project_name" {
+  value = var.project_name
 }
 
 # output s3_bucket_name {
