@@ -3,3 +3,4 @@ terraform init -reconfigure -backend-config="region=eu-west-1"  -backend-config=
 
 terraform plan
 terraform apply 
+ 
