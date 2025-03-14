@@ -3,12 +3,12 @@ name: "Terraform Infrastructure Change Management Pipeline with GitHub Actions"
 on:
  push:
    branches:
-   - dev
+   - main
    paths:
    - terraform/**
  pull_request:
    branches:
-   - dev
+   - main
    paths:
    - terraform/**
 
