@@ -6,13 +6,13 @@ on:
    - main
    - dev
    paths:
-   - terraform/**
+   - project-test/**
  pull_request:
    branches:
    - main
    - dev
    paths:
-   - terraform/**
+   - project-test/**
 
 env:
  # verbosity setting for Terraform logs
