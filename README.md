@@ -8,6 +8,7 @@
 
 ### 1. Architecture and Technologies
 
+
 #### Data Flow
 
 1. **Collection**: Retrieve raw data from a public API.
