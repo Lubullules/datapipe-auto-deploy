@@ -1,10 +1,10 @@
-variable region {
-  type        = string
-  default     = "eu-west-1"
+variable "region" {
+  type    = string
+  default = "eu-west-1"
 }
 
 variable "project_name" {
-  type = string
+  type        = string
   description = "Nom du projet"
   # default = "albert-proj-default"
 }
