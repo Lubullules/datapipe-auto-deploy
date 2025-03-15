@@ -7,10 +7,7 @@ on:
    - dev
    paths:
    - './terraform/**'
-<<<<<<< HEAD
-=======
    - './github/workflows/terraform**'
->>>>>>> 138df7e (Added terraform init to destroy workflow, added restriction on creation workflow triggers)
  pull_request:
    branches:
    - main
