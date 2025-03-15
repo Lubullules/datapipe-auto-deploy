@@ -71,7 +71,7 @@ jobs:
        id: approve
        uses: trstringer/manual-approval@v1
        with:
-        secret: ${{github.TOKEN}}
+        secret: ${{secrets.ISSUE_WRITING_TOKEN}}
         approvers: NAPondu, Aradjin, armenavd
         minimum-approvals: 1
         issue-title: "Deploying new terraform plan"
