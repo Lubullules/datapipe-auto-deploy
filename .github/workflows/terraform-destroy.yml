@@ -32,7 +32,14 @@ jobs:
             - name: Load environment variables
               id: load-vars
               run: source $ENV_FILE && echo "Loaded $ENV_FILE"
- 
+
+            - name: Terraform init
+              id: init
+              env:
+               BUCKET_TF_STATE: ${{ env.BUCKET_TF_STATE }}
+               KEY_TF_STATE: ${{ env.KEY_TF_STATE }}
+              run: terraform init  -backend-config="region=eu-west-1" -backend-config="bucket=$BUCKET_TF_STATE" -backend-config="key=$KEY_TF_STATE"
+        
             - name: Terraform format
               id: fmt
               run: terraform fmt -check
