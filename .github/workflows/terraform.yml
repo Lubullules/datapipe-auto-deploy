@@ -87,6 +87,6 @@ jobs:
         name: planfile
 
     #Terraform applying
-    #  - name: Terraform applying
-    #    id: apply
-    #    run: terraform apply planfile
+     - name: Terraform applying
+       id: apply
+       run: terraform apply planfile
