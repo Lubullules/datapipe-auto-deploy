@@ -4,8 +4,17 @@ resource "aws_s3_bucket" "bucket" {
   bucket = "${var.project_name}-${var.region}-v1"
 }
 
-#Resource allocation for AWS IAM role policy for Lambda use
+resource "aws_sfn_state_machine" "data_injection_worflow" {
+  name     = "data_injection_worflow"
+  role_arn = aws_iam_role.sfn_role.arn
+  definition = file("${path.module}/../aws/DataInjectionWorkflow.asl.json")
 
+  type = "STANDARD"
+}
+
+#Resource allocation for AWS IAM role for Lambda use
+
+#Role for Lambda
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
   assume_role_policy = jsonencode({
@@ -20,6 +29,35 @@ resource "aws_iam_role" "iam_for_lambda" {
       }
     ]
   })
+}
+
+#Policy for Lambda
+resource "aws_iam_role_policy_attachment" "iam_for_lambda_policy" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+#Role for Step Function
+resource "aws_iam_role" "sfn_role" {
+  name = "sfn_role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "states.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+#Policy for Step Function
+resource "aws_iam_role_policy_attachment" "sfn_role_policy" {
+  role       = aws_iam_role.sfn_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSStepFunctionsFullAccess"
 }
 
 #Resource allocation for AWS Lambda getDataFromApi
@@ -44,3 +82,4 @@ resource "aws_lambda_function" "lambda_getDataFromApi_resource" {
   runtime = "python3.13"
 
 }
+
