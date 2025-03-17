@@ -1,4 +1,3 @@
-*.json
 .terraform*
 planfile
 *.zip
