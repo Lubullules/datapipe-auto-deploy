@@ -1,8 +1,8 @@
 name: "Terraform Infrastructure Change Management Pipeline with GitHub Actions"
 
 on:
- schedule:
-  - cron: '0 8 * * *'
+# schedule:
+#  - cron: '0 8 * * *'
  push:
    branches:
    - main
