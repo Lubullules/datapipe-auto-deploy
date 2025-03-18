@@ -6,7 +6,7 @@ resource "aws_s3_bucket" "bucket" {
 #Resource allocation for Step Function
 resource "aws_sfn_state_machine" "data_injection_worflow" {
   name       = "data_injection_worflow"
-  role_arn   = aws_iam_role.sfn_role.arn
+  role_arn   = aws_iam_role.iam_sfn_role.arn
   definition = file("${path.module}/../aws/DataInjectionWorkflow.asl.json")
 
   type = "STANDARD"
@@ -19,8 +19,8 @@ resource "aws_lambda_function" "lambda_getDataFromApi_resource" {
   # path.module in the filename.
   filename      = "${path.module}/../aws/getDataFromApi.zip"
   function_name = "getDataFromApi"
-  role          = aws_iam_role.iam_for_lambda.arn
-  handler       = "lambda_function.lambda_handler"
+  role          = aws_iam_role.iam_lambda_role.arn
+  handler       = "getDataFromApi.lambda_handler"
 
 
   source_code_hash = data.archive_file.lambda_getDataFromApi_data.output_base64sha256
@@ -34,8 +34,8 @@ resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
   # path.module in the filename.
   filename      = "${path.module}/../aws/s3DataUpload.zip"
   function_name = "s3DataUpload"
-  role          = aws_iam_role.iam_for_lambda.arn
-  handler       = "lambda_function.lambda_handler"
+  role          = aws_iam_role.iam_lambda_role.arn
+  handler       = "s3DataUpload.lambda_handler"
 
 
   source_code_hash = data.archive_file.lambda_s3DataUpload_data.output_base64sha256

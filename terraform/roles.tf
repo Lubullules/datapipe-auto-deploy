@@ -1,6 +1,6 @@
 #Role for Step Function
-resource "aws_iam_role" "sfn_role" {
-  name = "sfn_role"
+resource "aws_iam_role" "iam_sfn_role" {
+  name = "iam_sfn_role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -16,8 +16,8 @@ resource "aws_iam_role" "sfn_role" {
 }
 
 #Role for Lambda
-resource "aws_iam_role" "iam_for_lambda" {
-  name = "iam_for_lambda"
+resource "aws_iam_role" "iam_lambda_role" {
+  name = "iam_lambda_role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
