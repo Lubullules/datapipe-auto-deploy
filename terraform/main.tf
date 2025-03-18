@@ -63,7 +63,7 @@ data "archive_file" "lambda_s3DataUpload_data" {
 #Resource allocation for CloudWatch Events (EventBridge) rule to create an event every 10 minutes
 resource "aws_cloudwatch_event_rule" "cloudwatch_event_10min" {
   name                = "10MinCloudWatchEventRule"
-  schedule_expression = "rate(10minutes)"
+  schedule_expression = "rate(10 minutes)"
 }
 
 #Affectation of the event trigger to the target Step Function
