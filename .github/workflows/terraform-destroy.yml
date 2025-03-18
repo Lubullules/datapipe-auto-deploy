@@ -1,7 +1,9 @@
 name: "Terraform Infrastructure Destruction Pipeline with GitHub Actions"
 
 on:
-    workflow_dispatch:
+  schedule:
+    - cron: '0 20 * * *'
+  workflow_dispatch:
 
 env:
  ENV_FILE: .config/.env.${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
