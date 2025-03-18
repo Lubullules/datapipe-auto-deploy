@@ -6,5 +6,9 @@ variable "region" {
 variable "project_name" {
   type        = string
   description = "Nom du projet"
-  # default = "albert-proj-default"
+}
+
+variable "account_id" {
+  type    = string
+  default = "257394462879"
 }
