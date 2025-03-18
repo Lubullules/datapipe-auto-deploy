@@ -14,7 +14,5 @@ def lambda_handler(event, context):
             "body": json.dumps(data)  # Convertir l'objet Python en JSON pour la réponse
         }
 
-    return {
-        "statusCode": response.status,
-        "body": json.dumps({"error": "Erreur lors de la récupération des données"})
-    }
+    # Lever une exception en cas d'erreur
+    raise Exception(f"Erreur lors de la récupération des données: {response.status}")

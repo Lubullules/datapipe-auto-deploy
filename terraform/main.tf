@@ -41,7 +41,7 @@ resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
   source_code_hash = data.archive_file.lambda_s3DataUpload_data.output_base64sha256
 
   runtime = "python3.13"
-    environment {
+  environment {
     variables = {
       BUCKET_NAME = "${var.project_name}-${var.region}-v1"
     }

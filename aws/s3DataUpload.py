@@ -1,18 +1,20 @@
+import os
 import json
 import datetime
-import boto3 # type: ignore
+import boto3  # type: ignore
 
 # Initialisation du client S3
 s3 = boto3.client("s3")
+BUCKET_NAME = os.getenv("BUCKET_NAME")
 
 def lambda_handler(event, context):
     # Extraire les données JSON reçues depuis l'événement
     try:
         data = json.loads(event['body'])  # Supposons que les données sont dans 'body'
-        
+
         # Générer un nom de fichier unique basé sur la date et l'heure
         file_name = f"data_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
-        
+
         # Convertir les données en chaîne JSON avant de les envoyer dans S3
         s3.put_object(
             Bucket=BUCKET_NAME,
@@ -28,8 +30,5 @@ def lambda_handler(event, context):
         }
 
     except Exception as e:
-        # En cas d'erreur, retourner un message d'erreur
-        return {
-            "statusCode": 500,
-            "body": json.dumps({"error": str(e)})
-        }
+        # Lever une exception en cas d'erreur
+        raise Exception(f"An error occurred: {str(e)}")

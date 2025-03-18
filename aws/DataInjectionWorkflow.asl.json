@@ -24,7 +24,18 @@
           "JitterStrategy": "FULL"
         }
       ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "Handle Get Data Error"
+        }
+      ],
       "Next": "S3 Data Upload"
+    },
+    "Handle Get Data Error": {
+      "Type": "Fail",
+      "Error": "GetDataFromApiFailed",
+      "Cause": "An error occurred while getting data from API."
     },
     "S3 Data Upload": {
       "Type": "Task",
@@ -48,7 +59,18 @@
           "JitterStrategy": "FULL"
         }
       ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "Handle S3 Upload Error"
+        }
+      ],
       "End": true
+    },
+    "Handle S3 Upload Error": {
+      "Type": "Fail",
+      "Error": "S3DataUploadFailed",
+      "Cause": "An error occurred while uploading data to S3."
     }
   },
   "QueryLanguage": "JSONata"
