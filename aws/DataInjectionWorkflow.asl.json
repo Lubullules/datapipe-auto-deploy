@@ -7,7 +7,7 @@
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
-        "FunctionName": "arn:aws:lambda:eu-west-1:257394462879:function:getDataFromAPI:$LATEST",
+        "FunctionName": "arn:aws:lambda:eu-west-1:257394462879:function:getDataFromApi:$LATEST",
         "Payload": "{% $states.input %}"
       },
       "Retry": [
