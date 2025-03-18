@@ -1,11 +1,9 @@
 import json
 import datetime
-import boto3
+import boto3 # type: ignore
 
 # Initialisation du client S3
 s3 = boto3.client("s3")
-
-BUCKET_NAME = "aws-s3-base-bucket-project-test"
 
 def lambda_handler(event, context):
     # Extraire les données JSON reçues depuis l'événement
@@ -35,4 +33,3 @@ def lambda_handler(event, context):
             "statusCode": 500,
             "body": json.dumps({"error": str(e)})
         }
-
