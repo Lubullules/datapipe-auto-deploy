@@ -10,8 +10,8 @@ resource "aws_iam_policy" "step_functions_policy" {
           "lambda:InvokeFunction"
         ],
         "Resource" : [
-          "arn:aws:lambda:${var.region}:${var.account_id}:function:s3DataUpload:*",
-          "arn:aws:lambda:${var.region}:${var.account_id}:function:getDataFromApi:*"
+          "${aws_lambda_function.lambda_getDataFromApi_resource.arn}",
+          "${aws_lambda_function.lambda_s3DataUpload_resource.arn}"
         ]
       }
     ]
@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "sfn_policy_attachment" {
 }
 
 #Create policy for Lambda
-resource "aws_iam_policy" "lambda_policy" {
+resource "aws_iam_policy" "lambda_s3_policy" {
   name = "LambdaPutInS3BucketPolicy"
   policy = jsonencode({
     "Version" : "2012-10-17",
@@ -51,6 +51,6 @@ resource "aws_iam_role_policy_attachment" "lambda_log_policy_attachment" {
 
 resource "aws_iam_role_policy_attachment" "lambda_s3_policy_attachment" {
   role       = aws_iam_role.iam_lambda_role.name
-  policy_arn = aws_iam_policy.lambda_policy.arn
+  policy_arn = aws_iam_policy.lambda_s3_policy.arn
 }
 
