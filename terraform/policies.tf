@@ -11,7 +11,7 @@ resource "aws_iam_policy" "step_functions_policy" {
         ],
         "Resource" : [
           "arn:aws:lambda:${var.region}:${var.account_id}:function:s3DataUpload:*",
-          "arn:aws:lambda:${var.region}:${var.account_id}:function:getDataFromAPI:*"
+          "arn:aws:lambda:${var.region}:${var.account_id}:function:getDataFromApi:*"
         ]
       }
     ]
