@@ -10,8 +10,8 @@ resource "aws_iam_policy" "step_functions_policy" {
           "lambda:InvokeFunction"
         ],
         "Resource" : [
-          "${aws_lambda_function.lambda_getDataFromApi_resource.arn}",
-          "${aws_lambda_function.lambda_s3DataUpload_resource.arn}"
+          "${aws_lambda_function.lambda_getDataFromApi_resource.arn}:*",
+          "${aws_lambda_function.lambda_s3DataUpload_resource.arn}:*"
         ]
       }
     ]
@@ -36,7 +36,7 @@ resource "aws_iam_policy" "lambda_s3_policy" {
           "s3:PutObject"
         ],
         "Resource" : [
-          "${aws_s3_bucket.bucket.arn}"
+          "${aws_s3_bucket.bucket.arn}:*"
         ]
       }
     ]
@@ -65,7 +65,7 @@ resource "aws_iam_policy" "cwe_sfn_policy" {
         "Action" = [
           "states:StartExecution"
         ],
-        "Resource" = "${aws_sfn_state_machine.data_injection_workflow.arn}"
+        "Resource" = "${aws_sfn_state_machine.data_injection_workflow.arn}:*"
       }
     ]
   })
