@@ -62,7 +62,7 @@ jobs:
               uses: trstringer/manual-approval@v1
               with:
                 secret: ${{secrets.ISSUE_WRITING_TOKEN}}
-                approvers: NAPondu, Aradjin, armenavd
+                approvers: NAPondu, Aradjin
                 minimum-approvals: 1
                 issue-title: "Destroying terraform infrastructure"
                 issue-body: "Please approve or deny the destruction of the terraform infrastructure"
