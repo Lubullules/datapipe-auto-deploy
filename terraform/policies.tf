@@ -11,7 +11,8 @@ resource "aws_iam_policy" "step_functions_policy" {
         ],
         "Resource" : [
           "${aws_lambda_function.lambda_getDataFromApi_resource.arn}:*",
-          "${aws_lambda_function.lambda_s3DataUpload_resource.arn}:*"
+          "${aws_lambda_function.lambda_s3DataUpload_resource.arn}:*",
+          "${aws_lambda_function.lambda_cleanTransformData_resource.arn}:*"
         ]
       }
     ]
