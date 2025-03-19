@@ -4,7 +4,7 @@ variable "region" {
 }
 
 variable "project_name" {
-  default = "test"
+  default     = "test"
   type        = string
   description = "Nom du projet"
 }
