@@ -33,7 +33,8 @@ resource "aws_iam_policy" "lambda_s3_policy" {
       {
         "Effect" : "Allow",
         "Action" : [
-          "s3:PutObject"
+          "s3:PutObject",
+          "s3:PutObjectAcl"
         ],
         "Resource" : [
           "${aws_s3_bucket.bucket.arn}"
