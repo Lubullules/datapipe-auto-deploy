@@ -8,3 +8,5 @@ terraform apply
 Terraform names syntax: snake_case
 
 AWS names syntax: CamelCase
+
+Pour les variables : prio 1 tfvars, prio 2 variable d'env, prio 3 default
