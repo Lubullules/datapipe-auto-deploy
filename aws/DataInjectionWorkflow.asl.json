@@ -26,7 +26,9 @@
       ],
       "Catch": [
         {
-          "ErrorEquals": ["States.ALL"],
+          "ErrorEquals": [
+            "States.ALL"
+          ],
           "Next": "Handle Get Data Error"
         }
       ],
@@ -61,11 +63,16 @@
       ],
       "Catch": [
         {
-          "ErrorEquals": ["States.ALL"],
+          "ErrorEquals": [
+            "States.ALL"
+          ],
           "Next": "Handle S3 Upload Error"
         }
       ],
-      "End": true
+      "Next": "Success"
+    },
+    "Success": {
+      "Type": "Succeed"
     },
     "Handle S3 Upload Error": {
       "Type": "Fail",
