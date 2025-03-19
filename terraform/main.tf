@@ -13,7 +13,7 @@ resource "aws_sfn_state_machine" "data_injection_workflow" {
 }
 
 
-#Resource allocation for AWS Lambda functions getDataFromApi and s3DataUpload
+#Resource allocation for AWS Lambda functions getDataFromApi, cleanTransformData and s3DataUpload
 resource "aws_lambda_function" "lambda_getDataFromApi_resource" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
@@ -22,11 +22,23 @@ resource "aws_lambda_function" "lambda_getDataFromApi_resource" {
   role          = aws_iam_role.iam_lambda_role.arn
   handler       = "getDataFromApi.lambda_handler"
 
-
   source_code_hash = data.archive_file.lambda_getDataFromApi_data.output_base64sha256
 
   runtime = "python3.13"
 
+}
+
+resource "aws_lambda_function" "lambda_cleanTransformData_resource" {
+  # If the file is not in the current working directory you will need to include a
+  # path.module in the filename.
+  filename      = "${path.module}/../aws/cleanTransformData.zip"
+  function_name = "cleanTransformData"
+  role          = aws_iam_role.iam_lambda_role.arn
+  handler       = "cleanTransformData.lambda_handler"
+
+  source_code_hash = data.archive_file.lambda_cleanTransformData_data.output_base64sha256
+
+  runtime = "python3.13"
 }
 
 resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
@@ -37,10 +49,10 @@ resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
   role          = aws_iam_role.iam_lambda_role.arn
   handler       = "s3DataUpload.lambda_handler"
 
-
   source_code_hash = data.archive_file.lambda_s3DataUpload_data.output_base64sha256
 
   runtime = "python3.13"
+
   environment {
     variables = {
       BUCKET_NAME = "${var.project_name}-${var.region}-v1"
@@ -48,12 +60,19 @@ resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
   }
 }
 
-#Resource importation for AWS Lambda s3DataUpload and getDataFromApi
+#Resource importation for AWS Lambda s3DataUpload, cleanTransformData and getDataFromApi
 data "archive_file" "lambda_getDataFromApi_data" {
   type        = "zip"
   source_file = "${path.module}/../aws/getDataFromApi.py" # Assurez-vous que le code source est dans ce dossier
   output_path = "${path.module}/../aws/getDataFromApi.zip"
 }
+
+data "archive_file" "lambda_cleanTransformData_data" {
+  type        = "zip"
+  source_file = "${path.module}/../aws/cleanTransformData.py" # Assurez-vous que le code source est dans ce dossier
+  output_path = "${path.module}/../aws/cleanTransformData.zip"
+}
+
 data "archive_file" "lambda_s3DataUpload_data" {
   type        = "zip"
   source_file = "${path.module}/../aws/s3DataUpload.py" # Assurez-vous que le code source est dans ce dossier
