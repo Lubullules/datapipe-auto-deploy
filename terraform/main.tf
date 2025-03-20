@@ -1,7 +1,9 @@
 #Resource allocation for AWS S3 bucket
 resource "aws_s3_bucket" "bucket" {
-  bucket = "${var.project_name}-${var.region}-v1"
+  bucket        = "${var.project_name}-${var.region}-v1"
+  force_destroy = true
 }
+
 
 #Resource allocation for Step Function
 resource "aws_sfn_state_machine" "data_injection_workflow" {
@@ -49,6 +51,8 @@ resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
   role          = aws_iam_role.iam_lambda_role.arn
   handler       = "s3DataUpload.lambda_handler"
 
+  layers = [aws_lambda_layer_version.pandas_pyarrow_layer.arn]
+
   source_code_hash = data.archive_file.lambda_s3DataUpload_data.output_base64sha256
 
   runtime = "python3.13"
@@ -58,6 +62,8 @@ resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
       BUCKET_NAME = "${var.project_name}-${var.region}-v1"
     }
   }
+
+  depends_on = [aws_lambda_layer_version.pandas_pyarrow_layer]
 }
 
 #Resource importation for AWS Lambda s3DataUpload, cleanTransformData and getDataFromApi
@@ -84,6 +90,43 @@ resource "aws_cloudwatch_event_rule" "cloudwatch_event_10min" {
   name                = "10MinCloudWatchEventRule"
   schedule_expression = "rate(10 minutes)"
 }
+
+# Lambda layer creation
+resource "null_resource" "create_lambda_layer" {
+  provisioner "local-exec" {
+    command = <<EOT
+      mkdir python
+      pip install pandas pyarrow -t python/
+      zip -r pandas_pyarrow_layer.zip python
+      rm -rf python
+    EOT
+  }
+
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+}
+
+resource "aws_s3_bucket" "lambda_layers_bucket" {
+  bucket_prefix = "lambda-layers-bucket"
+  force_destroy = true
+}
+
+resource "aws_s3_object" "upload_layer" {
+  bucket     = aws_s3_bucket.lambda_layers_bucket.bucket
+  key        = "pandas_pyarrow_layer.zip"
+  source     = "pandas_pyarrow_layer.zip"
+  depends_on = [null_resource.create_lambda_layer]
+}
+
+resource "aws_lambda_layer_version" "pandas_pyarrow_layer" {
+  layer_name          = "pandas_pyarrow_layer"
+  compatible_runtimes = ["python3.13"]
+  s3_bucket           = aws_s3_bucket.lambda_layers_bucket.bucket
+  s3_key              = aws_s3_object.upload_layer.key
+}
+
+
 
 #Affectation of the event trigger to the target Step Function
 # resource "aws_cloudwatch_event_target" "step_function_target" {
