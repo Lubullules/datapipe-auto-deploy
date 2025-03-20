@@ -15,19 +15,19 @@ def lambda_handler(event, context):
 
 
         # Traitement des données
-        for object in json_data:
+        for json_object in json_data:
             # Supprimer les clés inutiles
-            del object['rank']
+            del json_object['rank']
 
             # Rajouter le timestamp
-            object['timestamp'] = timestamp
+            json_object['timestamp'] = timestamp
 
             # Convertir les clés en float ou en None si elles sont vides
             for key in keys_to_float:
-                if object[key] == '':
-                    object[key] = None
-                else:
-                    object[key] = float(object[key])
+                if json_object[key] == '':
+                    json_object[key] = None
+                elif json_object[key] is not None:
+                    json_object[key] = float(json_object[key])
             
         # Retourner le JSON sous forme de chaîne dans la clé "body"
         return {
