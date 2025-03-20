@@ -97,7 +97,7 @@ resource "null_resource" "create_lambda_layer" {
     command = <<EOT
       mkdir python
       pip install pandas pyarrow -t python/
-      zip -r pandas_pyarrow_layer.zip python
+      zip -r ../aws/pandas_pyarrow_layer.zip python
       rm -rf python
     EOT
   }
