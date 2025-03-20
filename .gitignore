@@ -4,3 +4,4 @@
 *.json
 !aws/DataInjectionWorkflow.json
 *.parquet
+*.ipynb

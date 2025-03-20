@@ -4,11 +4,14 @@ import json
 def lambda_handler(event, context):
     # Extraire les données JSON reçues depuis l'événement
     try:
+        # Charger les données JSON
+        raw_json = json.loads(event['body'])
+
         # Récupérer le timestamp de l'événement
-        timestamp = datetime.fromtimestamp(event['body']['info']['time']).strftime('%Y-%m-%d %H:%M:%S')
+        timestamp = datetime.fromtimestamp(raw_json['info']['time']).strftime('%Y-%m-%d %H:%M:%S')
 
         # Récupérer les données JSON
-        json_data = event['body']['data']
+        json_data = raw_json['data']
 
         # Liste les clés qui sont à convertir en float
         keys_to_float = ['price_usd', 'percent_change_24h', 'percent_change_1h', 'percent_change_7d', 'price_btc', 'market_cap_usd', 'volume24', 'volume24a', 'csupply', 'tsupply', 'msupply']
