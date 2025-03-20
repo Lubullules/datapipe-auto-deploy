@@ -95,8 +95,8 @@ resource "aws_cloudwatch_event_rule" "cloudwatch_event_10min" {
 resource "null_resource" "create_lambda_layer" {
   provisioner "local-exec" {
     command = <<EOT
-      mkdir python
-      pip install pyarrow -t python/
+      mkdir -p python/lib/python3.13/site-packages
+      pip install pyarrow -t python/lib/python3.13/site-packages/
       zip -r ../aws/pyarrow_layer.zip python
       rm -rf python
     EOT
@@ -106,6 +106,7 @@ resource "null_resource" "create_lambda_layer" {
     always_run = "${timestamp()}"
   }
 }
+
 
 resource "aws_s3_bucket" "lambda_layers_bucket" {
   bucket_prefix = "lambda-layers-bucket-"
