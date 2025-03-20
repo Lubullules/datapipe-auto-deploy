@@ -1,10 +1,11 @@
 import os
+import io
 import json
 import datetime
+
 import boto3  # type: ignore
-import pandas as pd
+import pyarrow
 import pyarrow.parquet as pq
-import io
 
 # Initialisation du client S3
 s3 = boto3.client("s3")
@@ -19,15 +20,15 @@ def lambda_handler(event, context):
         if not isinstance(data, list):
             raise ValueError("Les données doivent être une liste de dictionnaires pour être converties en Parquet")
 
-        # Convertir en DataFrame
-        df = pd.DataFrame(data)
-
-        # Conversion en Parquet
-        parquet_buffer = io.BytesIO()
-        df.to_parquet(parquet_buffer, engine="pyarrow")
-
         # Générer un nom de fichier unique
         file_name = f"data_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.parquet"
+
+        # Conversion en .parquet
+        parquet_buffer = io.BytesIO()
+
+        table = pyarrow.Table.from_pydict(data)
+        with pq.ParquetWriter(parquet_buffer, table.schema) as writer:
+            writer.write_table(table)
 
         # Stocker dans S3
         s3.put_object(

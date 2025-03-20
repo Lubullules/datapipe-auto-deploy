@@ -51,7 +51,7 @@ resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
   role          = aws_iam_role.iam_lambda_role.arn
   handler       = "s3DataUpload.lambda_handler"
 
-  layers = [aws_lambda_layer_version.pandas_pyarrow_layer.arn]
+  layers = [aws_lambda_layer_version.pyarrow_layer.arn]
 
   source_code_hash = data.archive_file.lambda_s3DataUpload_data.output_base64sha256
 
@@ -63,7 +63,7 @@ resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
     }
   }
 
-  depends_on = [aws_lambda_layer_version.pandas_pyarrow_layer]
+  depends_on = [aws_lambda_layer_version.pyarrow_layer]
 }
 
 #Resource importation for AWS Lambda s3DataUpload, cleanTransformData and getDataFromApi
@@ -96,8 +96,8 @@ resource "null_resource" "create_lambda_layer" {
   provisioner "local-exec" {
     command = <<EOT
       mkdir python
-      pip install pandas pyarrow -t python/
-      zip -r ../aws/pandas_pyarrow_layer.zip python
+      pip install pyarrow -t python/
+      zip -r ../aws/pyarrow_layer.zip python
       rm -rf python
     EOT
   }
@@ -108,22 +108,22 @@ resource "null_resource" "create_lambda_layer" {
 }
 
 resource "aws_s3_bucket" "lambda_layers_bucket" {
-  bucket_prefix = "lambda-layers-bucket"
+  bucket_prefix = "lambda-layers-bucket-"
   force_destroy = true
 }
 
-resource "aws_s3_object" "upload_layer" {
+resource "aws_s3_object" "upload_layers" {
   bucket     = aws_s3_bucket.lambda_layers_bucket.bucket
-  key        = "pandas_pyarrow_layer.zip"
-  source     = "pandas_pyarrow_layer.zip"
+  key        = "pyarrow_layer.zip"
+  source     = "${path.module}/../aws/pyarrow_layer.zip"
   depends_on = [null_resource.create_lambda_layer]
 }
 
-resource "aws_lambda_layer_version" "pandas_pyarrow_layer" {
-  layer_name          = "pandas_pyarrow_layer"
+resource "aws_lambda_layer_version" "pyarrow_layer" {
+  layer_name          = "pyarrow"
   compatible_runtimes = ["python3.13"]
   s3_bucket           = aws_s3_bucket.lambda_layers_bucket.bucket
-  s3_key              = aws_s3_object.upload_layer.key
+  s3_key              = aws_s3_object.upload_layers.key
 }
 
 
