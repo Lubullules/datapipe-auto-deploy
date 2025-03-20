@@ -1,41 +1,40 @@
 from datetime import datetime
-import pandas as pd
+import json
 
 def lambda_handler(event, context):
     # Extraire les données JSON reçues depuis l'événement
     try:
-        df = pd.DataFrame(event['body']['data']) # Supposons que les données sont dans 'body'
-
-        # Récupérer le timestamp et le convertir en format lisible
+        # Récupérer le timestamp de l'événement
         timestamp = datetime.fromtimestamp(event['body']['info']['time']).strftime('%Y-%m-%d %H:%M:%S')
 
-        df['timestamp'] = timestamp
+        # Récupérer les données JSON
+        json_data = event['body']['data']
 
-        # Convertir les valeurs manquantes en NaN
-        df = df.replace('', None)
+        # Liste les clés qui sont à convertir en float
+        keys_to_float = ['price_usd', 'percent_change_24h', 'percent_change_1h', 'percent_change_7d', 'price_btc', 'market_cap_usd', 'volume24', 'volume24a', 'csupply', 'tsupply', 'msupply']
 
-        # Dropper les colonnes inutiles
-        df = df.drop(columns=['rank'])
 
-        # Transformer les types de données
-        df['price_usd'] = df['price_usd'].astype(float)
-        df['percent_change_24h'] = df['percent_change_24h'].astype(float)
-        df['percent_change_1h'] = df['percent_change_1h'].astype(float)
-        df['percent_change_7d'] = df['percent_change_7d'].astype(float)
-        df['price_btc'] = df['price_btc'].astype(float)
-        df['market_cap_usd'] = df['market_cap_usd'].astype(float)
-        df['volume24'] = df['volume24'].astype(float)
-        df['volume24a'] = df['volume24a'].astype(float)
-        df['csupply'] = df['csupply'].astype(float)
-        df['tsupply'] = df['tsupply'].astype(float)
-        df['msupply'] = df['msupply'].astype(float)
+        # Traitement des données
+        for object in json_data:
+            # Supprimer les clés inutiles
+            del object['rank']
 
-        # Retourner le DataFrame sous forme de chaîne JSON
+            # Rajouter le timestamp
+            object['timestamp'] = timestamp
+
+            # Convertir les clés en float ou en None si elles sont vides
+            for key in keys_to_float:
+                if object[key] == '':
+                    object[key] = None
+                else:
+                    object[key] = float(object[key])
+            
+        # Retourner le JSON sous forme de chaîne dans la clé "body"
         return {
             "statusCode": 200,
-            "body": df.to_json(orient='records')
+            "body": json.dumps(json_data)  # Convertir l'objet Python en JSON pour la réponse
         }
-    
+
     # Lever une exception en cas d'erreur
     except Exception as e:
         raise Exception(f"An error occurred: {str(e)}")
