@@ -1,7 +1,0 @@
-.terraform*
-*planfile
-*.zip
-*.json
-!aws/DataInjectionWorkflow.json
-*.parquet
-*.ipynb

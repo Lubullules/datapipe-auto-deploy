@@ -1,20 +1,3 @@
-#Resource allocation for AWS S3 bucket
-resource "aws_s3_bucket" "bucket" {
-  bucket        = "${var.project_name}-${var.region}-v1"
-  force_destroy = true
-}
-
-
-#Resource allocation for Step Function
-resource "aws_sfn_state_machine" "data_injection_workflow" {
-  name       = "DataInjectionWorkflow"
-  role_arn   = aws_iam_role.iam_sfn_role.arn
-  definition = file("${path.module}/../aws/DataInjectionWorkflow.asl.json")
-
-  type = "STANDARD"
-}
-
-
 #Resource allocation for AWS Lambda functions getDataFromApi, cleanTransformData and s3DataUpload
 resource "aws_lambda_function" "lambda_getDataFromApi_resource" {
   # If the file is not in the current working directory you will need to include a
@@ -62,41 +45,5 @@ resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
     variables = {
       BUCKET_NAME = "${var.project_name}-${var.region}-v1"
     }
-  }
-}
-
-#Resource importation for AWS Lambda s3DataUpload, cleanTransformData and getDataFromApi
-data "archive_file" "lambda_getDataFromApi_data" {
-  type        = "zip"
-  source_file = "${path.module}/../aws/getDataFromApi.py" # Assurez-vous que le code source est dans ce dossier
-  output_path = "${path.module}/../aws/getDataFromApi.zip"
-}
-
-data "archive_file" "lambda_cleanTransformData_data" {
-  type        = "zip"
-  source_file = "${path.module}/../aws/cleanTransformData.py" # Assurez-vous que le code source est dans ce dossier
-  output_path = "${path.module}/../aws/cleanTransformData.zip"
-}
-
-data "archive_file" "lambda_s3DataUpload_data" {
-  type        = "zip"
-  source_file = "${path.module}/../aws/s3DataUpload.py" # Assurez-vous que le code source est dans ce dossier
-  output_path = "${path.module}/../aws/s3DataUpload.zip"
-}
-
-#Resource allocation for CloudWatch Events (EventBridge) rule to create an event every 10 minutes
-resource "aws_scheduler_schedule" "step_function_scheduler" {
-  name       = "StepFunctionScheduler"
-  group_name = "default"
-
-  flexible_time_window {
-    mode = "OFF"
-  }
-
-  schedule_expression = "rate(1 minute)"
-
-  target {
-    arn      = aws_sfn_state_machine.data_injection_workflow.arn
-    role_arn = aws_iam_role.iam_scheduler_role.arn
   }
 }

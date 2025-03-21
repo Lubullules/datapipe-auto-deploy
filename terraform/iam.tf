@@ -1,3 +1,54 @@
+#Role for Step Function
+resource "aws_iam_role" "iam_sfn_role" {
+  name = "StepFunctionsRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "states.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+#Role for Lambda
+resource "aws_iam_role" "iam_lambda_role" {
+  name = "LambdaRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+#Role for CloudWatch Events
+resource "aws_iam_role" "iam_scheduler_role" {
+  name = "SchedulerRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "scheduler.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
 #Create policy for Step Function
 resource "aws_iam_policy" "step_functions_policy" {
   name = "StepFunctionsInvokeLambdaPolicy"
@@ -67,7 +118,7 @@ resource "aws_iam_policy" "scheduler_sfn_policy" {
         "Action" = [
           "states:StartExecution"
         ],
-        "Resource" = "${aws_sfn_state_machine.data_injection_workflow.arn}:*"
+        "Resource" = "${aws_sfn_state_machine.data_injection_workflow.arn}"
       }
     ]
   })
