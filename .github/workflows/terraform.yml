@@ -2,18 +2,18 @@ name: "Terraform Infrastructure Change Management Pipeline with GitHub Actions"
 
 on:
  schedule:
-  - cron: '20 14 * * *'
+  - cron: '35 13 * * *'
  push:
    branches:
-   - main
-   - dev
+   - 'main'
+   - 'dev'
    paths:
    - './terraform/**'
    - './.github/workflows/terraform*.*'
  pull_request:
    branches:
-   - main
-   - dev
+   - 'main'
+   - 'dev'
  workflow_dispatch:
 
 env:
