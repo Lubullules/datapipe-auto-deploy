@@ -23,10 +23,13 @@ def lambda_handler(event, context):
         # Générer un nom de fichier unique
         file_name = f"data_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.parquet"
 
+        # Convertir la liste de dictionnaires en dictionnaire de listes
+        columns = {key: [d[key] for d in data] for key in data[0]}
+
         # Conversion en .parquet
         parquet_buffer = io.BytesIO()
 
-        table = pyarrow.Table.from_pydict(data)
+        table = pyarrow.Table.from_pydict(columns)
         with pq.ParquetWriter(parquet_buffer, table.schema) as writer:
             writer.write_table(table)
 

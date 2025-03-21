@@ -50,6 +50,7 @@ resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
   function_name = "s3DataUpload"
   role          = aws_iam_role.iam_lambda_role.arn
   handler       = "s3DataUpload.lambda_handler"
+  timeout = 60
 
   layers = [aws_lambda_layer_version.pyarrow_layer.arn]
 
