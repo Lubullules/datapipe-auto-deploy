@@ -4,6 +4,19 @@ resource "aws_s3_bucket" "bucket" {
   force_destroy = true
 }
 
+############## Partie Snowflake ##############
+
+resource "snowflake_database" "db" {
+  name = "TF_DEMO"
+}
+
+resource "snowflake_warehouse" "warehouse" {
+  name           = "TF_DEMO"
+  warehouse_size = "xsmall"
+  auto_suspend   = 60
+}
+
+############## Fin Partie Snowflake ##############
 
 #Resource allocation for Step Function
 resource "aws_sfn_state_machine" "data_injection_workflow" {
@@ -50,7 +63,7 @@ resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
   function_name = "s3DataUpload"
   role          = aws_iam_role.iam_lambda_role.arn
   handler       = "s3DataUpload.lambda_handler"
-  timeout = 60
+  timeout       = 60
 
   layers = ["arn:aws:lambda:eu-west-1:336392948345:layer:AWSSDKPandas-Python313:1"]
 
