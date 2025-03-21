@@ -1,6 +1,6 @@
 #Role for Step Function
 resource "aws_iam_role" "iam_sfn_role" {
-  name = "StepFunctionsRole"
+  name = "${var.project_name}-${var.env}-StepFunctionsRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -17,7 +17,7 @@ resource "aws_iam_role" "iam_sfn_role" {
 
 #Role for Lambda
 resource "aws_iam_role" "iam_lambda_role" {
-  name = "LambdaRole"
+  name = "${var.project_name}-${var.env}-LambdaRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -34,7 +34,7 @@ resource "aws_iam_role" "iam_lambda_role" {
 
 #Role for CloudWatch Events
 resource "aws_iam_role" "iam_scheduler_role" {
-  name = "SchedulerRole"
+  name = "${var.project_name}-${var.env}-SchedulerRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -51,7 +51,7 @@ resource "aws_iam_role" "iam_scheduler_role" {
 
 #Create policy for Step Function
 resource "aws_iam_policy" "step_functions_policy" {
-  name = "StepFunctionsInvokeLambdaPolicy"
+  name = "${var.project_name}-${var.env}-StepFunctionsInvokeLambdaPolicy"
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -78,7 +78,7 @@ resource "aws_iam_role_policy_attachment" "sfn_policy_attachment" {
 
 #Create policy for Lambda
 resource "aws_iam_policy" "lambda_s3_policy" {
-  name = "LambdaPutInS3BucketPolicy"
+  name = "${var.project_name}-${var.env}-LambdaPutInS3BucketPolicy"
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -109,7 +109,7 @@ resource "aws_iam_role_policy_attachment" "lambda_s3_policy_attachment" {
 
 #Create policy for Scheduler
 resource "aws_iam_policy" "scheduler_sfn_policy" {
-  name = "SchedulerStartStepFunctionExecutionPolicy"
+  name = "${var.project_name}-${var.env}-SchedulerStartStepFunctionExecutionPolicy"
   policy = jsonencode({
     "Version" = "2012-10-17",
     "Statement" = [
