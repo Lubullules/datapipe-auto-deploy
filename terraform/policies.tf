@@ -38,7 +38,7 @@ resource "aws_iam_policy" "lambda_s3_policy" {
           "s3:PutObjectAcl"
         ],
         "Resource" : [
-          "${aws_s3_bucket.bucket.arn}"
+          "${aws_s3_bucket.bucket.arn}/*"
         ]
       }
     ]
