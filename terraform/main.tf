@@ -52,7 +52,7 @@ resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
   handler       = "s3DataUpload.lambda_handler"
   timeout = 60
 
-  layers = [aws_lambda_layer_version.pyarrow_layer.arn]
+  layers = ["arn:aws:lambda:eu-west-1:336392948345:layer:AWSSDKPandas-Python313:1"]
 
   source_code_hash = data.archive_file.lambda_s3DataUpload_data.output_base64sha256
 
@@ -63,8 +63,6 @@ resource "aws_lambda_function" "lambda_s3DataUpload_resource" {
       BUCKET_NAME = "${var.project_name}-${var.region}-v1"
     }
   }
-
-  depends_on = [aws_lambda_layer_version.pyarrow_layer]
 }
 
 #Resource importation for AWS Lambda s3DataUpload, cleanTransformData and getDataFromApi
@@ -91,44 +89,6 @@ resource "aws_cloudwatch_event_rule" "cloudwatch_event_10min" {
   name                = "10MinCloudWatchEventRule"
   schedule_expression = "rate(10 minutes)"
 }
-
-# Lambda layer creation
-resource "null_resource" "create_lambda_layer" {
-  provisioner "local-exec" {
-    command = <<EOT
-      mkdir -p python/lib/python3.13/site-packages
-      pip install pyarrow -t python/lib/python3.13/site-packages/
-      zip -r ../aws/pyarrow_layer.zip python
-      rm -rf python
-    EOT
-  }
-
-  triggers = {
-    always_run = "${timestamp()}"
-  }
-}
-
-
-resource "aws_s3_bucket" "lambda_layers_bucket" {
-  bucket_prefix = "lambda-layers-bucket-"
-  force_destroy = true
-}
-
-resource "aws_s3_object" "upload_layers" {
-  bucket     = aws_s3_bucket.lambda_layers_bucket.bucket
-  key        = "pyarrow_layer.zip"
-  source     = "${path.module}/../aws/pyarrow_layer.zip"
-  depends_on = [null_resource.create_lambda_layer]
-}
-
-resource "aws_lambda_layer_version" "pyarrow_layer" {
-  layer_name          = "pyarrow"
-  compatible_runtimes = ["python3.13"]
-  s3_bucket           = aws_s3_bucket.lambda_layers_bucket.bucket
-  s3_key              = aws_s3_object.upload_layers.key
-}
-
-
 
 #Affectation of the event trigger to the target Step Function
 # resource "aws_cloudwatch_event_target" "step_function_target" {
