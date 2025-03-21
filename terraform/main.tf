@@ -85,15 +85,18 @@ data "archive_file" "lambda_s3DataUpload_data" {
 }
 
 #Resource allocation for CloudWatch Events (EventBridge) rule to create an event every 10 minutes
-resource "aws_cloudwatch_event_rule" "step_function_scheduler" {
-  name                = "StepFunctionSchedulerCloudWatchEventRule"
-  schedule_expression = "rate(1 minute)"
-}
+resource "aws_scheduler_schedule" "step_function_scheduler" {
+  name                = "StepFunctionScheduler"
+  group_name = "default"
 
-#Affectation of the event trigger to the target Step Function
-resource "aws_cloudwatch_event_target" "step_function_target" {
-  rule      = aws_cloudwatch_event_rule.step_function_scheduler.name
-  target_id = "data_injection_workflow_target"
-  arn       = aws_sfn_state_machine.data_injection_workflow.arn
-  role_arn  = aws_iam_role.iam_cloudwatch_events_role.arn
+  flexible_time_window {
+    mode = "OFF"
+  }
+
+  schedule_expression = "rate(1 minute)"
+
+  target {
+    arn = aws_sfn_state_machine.data_injection_workflow.arn
+    role_arn = aws_iam_role.iam_scheduler_role.arn
+  }
 }

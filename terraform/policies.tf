@@ -56,9 +56,9 @@ resource "aws_iam_role_policy_attachment" "lambda_s3_policy_attachment" {
   policy_arn = aws_iam_policy.lambda_s3_policy.arn
 }
 
-#Create policy for CloudWatch Events
-resource "aws_iam_policy" "cwe_sfn_policy" {
-  name = "CloudWatchEventsStartStepFunctionExecutionPolicy"
+#Create policy for Scheduler
+resource "aws_iam_policy" "scheduler_sfn_policy" {
+  name = "SchedulerStartStepFunctionExecutionPolicy"
   policy = jsonencode({
     "Version" = "2012-10-17",
     "Statement" = [
@@ -73,8 +73,8 @@ resource "aws_iam_policy" "cwe_sfn_policy" {
   })
 }
 
-#Attach policy for CloudWatch Events
-resource "aws_iam_role_policy_attachment" "cwe_policy_attachment" {
-  role       = aws_iam_role.iam_cloudwatch_events_role.name
-  policy_arn = aws_iam_policy.cwe_sfn_policy.arn
+#Attach policy for Scheduler
+resource "aws_iam_role_policy_attachment" "scheduler_policy_attachment" {
+  role       = aws_iam_role.iam_scheduler_role.name
+  policy_arn = aws_iam_policy.scheduler_sfn_policy.arn
 }
