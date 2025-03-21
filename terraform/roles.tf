@@ -33,15 +33,15 @@ resource "aws_iam_role" "iam_lambda_role" {
 }
 
 #Role for CloudWatch Events
-resource "aws_iam_role" "iam_cloudwatch_events_role" {
-  name = "CloudwatchEventsRole"
+resource "aws_iam_role" "iam_scheduler_role" {
+  name = "SchedulerRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
         Effect = "Allow",
         Principal = {
-          Service = "events.amazonaws.com"
+          Service = "scheduler.amazonaws.com"
         },
         Action = "sts:AssumeRole"
       }
