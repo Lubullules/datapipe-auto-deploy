@@ -1,14 +1,22 @@
 {
   "Comment": "A description of my state machine",
-  "StartAt": "Get Data From API",
+  "StartAt": "Pass: AssignVariable",
   "States": {
+    "Pass: AssignVariable": {
+      "Type": "Pass",
+      "Next": "Get Data From API",
+      "Assign": {
+        "wf_timestamp": "$now()"
+      },
+      "ResultPath": "$.timestampInfo"
+    },
     "Get Data From API": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
-      "Output": "{% $states.result.Payload %}",
+      "OutputPath": "$.Payload",
       "Arguments": {
         "FunctionName": "${get_data_from_api_arn}",
-        "Payload": "{% $states.input %}"
+        "Payload.$": "$.timestampInfo"
       },
       "Retry": [
         {
@@ -30,15 +38,15 @@
           "Next": "Handle Get Data Error"
         }
       ],
-      "Next": "Clean and Transform Data"
+      "Next": "Process Data"
     },
-    "Clean and Transform Data": {
+    "Process Data": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
-      "Output": "{% $states.result.Payload %}",
+      "OutputPath": "$.Payload",
       "Arguments": {
-        "FunctionName": "${clean_transform_data_arn}",
-        "Payload": "{% $states.input %}"
+        "FunctionName": "${process_data_arn}",
+        "Payload.$": "$.timestampInfo"
       },
       "Retry": [
         {
@@ -57,58 +65,23 @@
       "Catch": [
         {
           "ErrorEquals": ["States.ALL"],
-          "Next": "Handle Clean and Transform Error"
+          "Next": "Handle Process Data Error"
         }
       ],
-      "Next": "S3 Data Upload"
+      "Next": "Success"
     },
     "Handle Get Data Error": {
       "Type": "Fail",
       "Error": "GetDataFromApiFailed",
       "Cause": "An error occurred while getting data from API."
     },
-    "Handle Clean and Transform Error": {
+    "Handle Process Data Error": {
       "Type": "Fail",
-      "Error": "CleanTransformDataFailed",
-      "Cause": "An error occurred while cleaning and transforming data."
-    },
-    "S3 Data Upload": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::lambda:invoke",
-      "Output": "{% $states.result.Payload %}",
-      "Arguments": {
-        "FunctionName": "${s3_data_upload_arn}",
-        "Payload": "{% $states.input %}"
-      },
-      "Retry": [
-        {
-          "ErrorEquals": [
-            "Lambda.ServiceException",
-            "Lambda.AWSLambdaException",
-            "Lambda.SdkClientException",
-            "Lambda.TooManyRequestsException"
-          ],
-          "IntervalSeconds": 1,
-          "MaxAttempts": 3,
-          "BackoffRate": 2,
-          "JitterStrategy": "FULL"
-        }
-      ],
-      "Catch": [
-        {
-          "ErrorEquals": ["States.ALL"],
-          "Next": "Handle S3 Upload Error"
-        }
-      ],
-      "Next": "Success"
+      "Error": "ProcessDataFailed",
+      "Cause": "An error occurred while processing data."
     },
     "Success": {
       "Type": "Succeed"
-    },
-    "Handle S3 Upload Error": {
-      "Type": "Fail",
-      "Error": "S3DataUploadFailed",
-      "Cause": "An error occurred while uploading data to S3."
     }
   },
   "QueryLanguage": "JSONata"

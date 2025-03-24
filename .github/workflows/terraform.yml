@@ -7,7 +7,7 @@ on:
     branches:
       - main
       - dev
-      - schduler-test
+      - step-function
     paths:
       - 'terraform/**'
       - '.github/workflows/terraform*.*'
