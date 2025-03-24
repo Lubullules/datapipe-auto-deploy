@@ -35,15 +35,12 @@ def save_to_s3(data, timestamp):
 
     # Formater le timestamp pour le nom du fichier
     timestamp_str = datetime.utcfromtimestamp(timestamp).strftime("%Y%m%d-%H%M%S")
-    file_name = f"data-{timestamp_str}.parquet"
 
     # Chemin complet sur S3
     s3_path = f"s3://{BUCKET_NAME}/{BASE_PATH}"
 
     # Sauvegarde en Parquet
     wr.s3.to_parquet(df=df, path=s3_path, dataset=True)
-
-    return file_name
 
 def lambda_handler(event, context):
     """Handler principal de la Lambda."""
@@ -52,7 +49,7 @@ def lambda_handler(event, context):
         timestamp = event.get("timestamp", datetime.utcnow().timestamp())
 
         crypto_data = fetch_crypto_data()
-        file_name = save_to_s3(crypto_data, timestamp)
+        save_to_s3(crypto_data, timestamp)
 
         return {
             "statusCode": 200,
