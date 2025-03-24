@@ -1,18 +1,69 @@
 import urllib3
+import os
 import json
+import pandas as pd
+from datetime import datetime
+import awswrangler as wr
+
+# Config S3
+BUCKET_NAME = os.getenv("BUCKET_NAME")
+BASE_PATH = "raw/"  # Dossier sur S3
+
+def fetch_crypto_data():
+    """Récupère les 1000 premières cryptos depuis CoinLore."""
+    http = urllib3.PoolManager()
+    cryptos = []
+
+    for start in range(0, 1000, 100):  # Paginer par 100 (limite API)
+        url = f"https://api.coinlore.net/api/tickers/?start={start}&limit=100"
+        response = http.request("GET", url)
+
+        if response.status != 200:
+            raise Exception(f"Erreur API: {response.status}")
+
+        data = json.loads(response.data.decode("utf-8"))
+        cryptos.extend(data["data"])
+
+    return cryptos
+
+def save_to_s3(data, timestamp):
+    """Sauvegarde les données en Parquet sous un fichier raw nommé data-{timestamp}.parquet."""
+    df = pd.DataFrame(data)  # Convertir en DataFrame Pandas
+    
+    # Ajouter la colonne timestamp
+    df["timestamp"] = timestamp
+
+    # Formater le timestamp pour le nom du fichier
+    timestamp_str = datetime.utcfromtimestamp(timestamp).strftime("%Y%m%d-%H%M%S")
+    file_name = f"data-{timestamp_str}.parquet"
+
+    # Chemin complet sur S3
+    s3_path = f"s3://{BUCKET_NAME}/{BASE_PATH}"
+
+    # Sauvegarde en Parquet
+    wr.s3.to_parquet(df=df, path=s3_path, dataset=True)
+
+    return file_name
 
 def lambda_handler(event, context):
-    http = urllib3.PoolManager()
-    response = http.request("GET", "https://api.coinlore.net/api/tickers/")
+    """Handler principal de la Lambda."""
+    try:
+        # Récupérer le timestamp depuis l'event ou utiliser l'heure actuelle
+        timestamp = event.get("timestamp", datetime.utcnow().timestamp())
 
-    if response.status == 200:
-        data = json.loads(response.data.decode("utf-8"))  # Convertir en JSON
+        crypto_data = fetch_crypto_data()
+        file_name = save_to_s3(crypto_data, timestamp)
 
-        # Retourner le JSON sous forme de chaîne dans la clé "body"
         return {
             "statusCode": 200,
-            "body": json.dumps(data)  # Convertir l'objet Python en JSON pour la réponse
+            "body": json.dumps({
+                "message": "Donnees enregistrees sur S3",
+                "timestamp": f"timestamp"
+            })
         }
-
-    # Lever une exception en cas d'erreur
-    raise Exception(f"Erreur lors de la récupération des données: {response.status}")
+    
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": str(e)})
+        }
