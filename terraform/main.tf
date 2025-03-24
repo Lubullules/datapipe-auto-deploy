@@ -4,8 +4,6 @@ resource "aws_s3_bucket" "bucket" {
   force_destroy = true
 }
 
-############## Partie Snowflake ##############
-
 resource "snowflake_database" "db" {
   name = "TF_DEMO"
 }
@@ -15,8 +13,6 @@ resource "snowflake_warehouse" "warehouse" {
   warehouse_size = "xsmall"
   auto_suspend   = 60
 }
-
-############## Fin Partie Snowflake ##############
 
 #Resource allocation for Step Function
 resource "aws_sfn_state_machine" "data_injection_workflow" {
