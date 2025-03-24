@@ -13,3 +13,8 @@ variable "account_id" {
   type    = string
   default = "257394462879"
 }
+
+variable "env" {
+  type    = string
+  default = "dev"
+}

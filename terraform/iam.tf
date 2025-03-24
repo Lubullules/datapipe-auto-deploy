@@ -1,6 +1,57 @@
+#Role for Step Function
+resource "aws_iam_role" "iam_sfn_role" {
+  name = "${var.project_name}-${var.env}-StepFunctionsRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "states.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+#Role for Lambda
+resource "aws_iam_role" "iam_lambda_role" {
+  name = "${var.project_name}-${var.env}-LambdaRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+#Role for CloudWatch Events
+resource "aws_iam_role" "iam_scheduler_role" {
+  name = "${var.project_name}-${var.env}-SchedulerRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "scheduler.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
 #Create policy for Step Function
 resource "aws_iam_policy" "step_functions_policy" {
-  name = "StepFunctionsInvokeLambdaPolicy"
+  name = "${var.project_name}-${var.env}-StepFunctionsInvokeLambdaPolicy"
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -27,7 +78,7 @@ resource "aws_iam_role_policy_attachment" "sfn_policy_attachment" {
 
 #Create policy for Lambda
 resource "aws_iam_policy" "lambda_s3_policy" {
-  name = "LambdaPutInS3BucketPolicy"
+  name = "${var.project_name}-${var.env}-LambdaPutInS3BucketPolicy"
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -56,9 +107,9 @@ resource "aws_iam_role_policy_attachment" "lambda_s3_policy_attachment" {
   policy_arn = aws_iam_policy.lambda_s3_policy.arn
 }
 
-#Create policy for CloudWatch Events
-resource "aws_iam_policy" "cwe_sfn_policy" {
-  name = "CloudWatchEventsStartStepFunctionExecutionPolicy"
+#Create policy for Scheduler
+resource "aws_iam_policy" "scheduler_sfn_policy" {
+  name = "${var.project_name}-${var.env}-SchedulerStartStepFunctionExecutionPolicy"
   policy = jsonencode({
     "Version" = "2012-10-17",
     "Statement" = [
@@ -67,14 +118,14 @@ resource "aws_iam_policy" "cwe_sfn_policy" {
         "Action" = [
           "states:StartExecution"
         ],
-        "Resource" = "${aws_sfn_state_machine.data_injection_workflow.arn}:*"
+        "Resource" = "${aws_sfn_state_machine.data_injection_workflow.arn}"
       }
     ]
   })
 }
 
-#Attach policy for CloudWatch Events
-resource "aws_iam_role_policy_attachment" "cwe_policy_attachment" {
-  role       = aws_iam_role.iam_cloudwatch_events_role.name
-  policy_arn = aws_iam_policy.cwe_sfn_policy.arn
+#Attach policy for Scheduler
+resource "aws_iam_role_policy_attachment" "scheduler_policy_attachment" {
+  role       = aws_iam_role.iam_scheduler_role.name
+  policy_arn = aws_iam_policy.scheduler_sfn_policy.arn
 }
