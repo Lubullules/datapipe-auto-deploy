@@ -46,7 +46,7 @@ def lambda_handler(event, context):
     """Handler principal de la Lambda."""
     try:
         # Récupérer le timestamp depuis l'event ou utiliser l'heure actuelle
-        timestamp = event.get("timestamp", datetime.utcnow().timestamp())
+        timestamp = event.get("wf_timestamp", datetime.utcnow().timestamp())
 
         crypto_data = fetch_crypto_data()
         save_to_s3(crypto_data, timestamp)
@@ -55,7 +55,7 @@ def lambda_handler(event, context):
             "statusCode": 200,
             "body": json.dumps({
                 "message": "Donnees enregistrees sur S3",
-                "timestamp": f"timestamp"
+                "timestamp": timestamp
             })
         }
     

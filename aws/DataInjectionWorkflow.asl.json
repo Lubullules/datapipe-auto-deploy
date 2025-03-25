@@ -5,18 +5,20 @@
     "Pass: AssignVariable": {
       "Type": "Pass",
       "Next": "Get Data From API",
-      "Assign": {
+      "Result": {
         "wf_timestamp": "$now()"
-      },
-      "ResultPath": "$.timestampInfo"
+      }
     },
     "Get Data From API": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
-      "OutputPath": "$.Payload",
+      "Output": "{% $states.result.Payload %}",
       "Arguments": {
         "FunctionName": "${get_data_from_api_arn}",
-        "Payload.$": "$.timestampInfo"
+        "Payload": {
+          "timestampInfo.$": "$$.states.Pass: AssignVariable.Result.wf_timestamp",
+          "input.$": "$"
+        }
       },
       "Retry": [
         {
@@ -43,10 +45,13 @@
     "Process Data": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
-      "OutputPath": "$.Payload",
+      "Output": "{% $states.result.Payload %}",
       "Arguments": {
         "FunctionName": "${process_data_arn}",
-        "Payload.$": "$.timestampInfo"
+        "Payload": {
+          "timestampInfo.$": "$$.states.Pass: AssignVariable.Result.wf_timestamp",
+          "input.$": "$"
+        }
       },
       "Retry": [
         {

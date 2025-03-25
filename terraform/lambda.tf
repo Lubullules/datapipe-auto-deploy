@@ -6,6 +6,8 @@ resource "aws_lambda_function" "lambda_getDataFromApi_resource" {
   function_name = "${var.project_name}-${var.env}-getDataFromApi"
   role          = aws_iam_role.iam_lambda_role.arn
   handler       = "getDataFromApi.lambda_handler"
+  timeout       = 60
+  memory_size   = 512
 
   layers = ["arn:aws:lambda:eu-west-1:336392948345:layer:AWSSDKPandas-Python313:1"]
 
@@ -28,6 +30,7 @@ resource "aws_lambda_function" "lambda_processData_resource" {
   role          = aws_iam_role.iam_lambda_role.arn
   handler       = "processData.lambda_handler"
   timeout       = 60
+  memory_size   = 512
 
   layers = ["arn:aws:lambda:eu-west-1:336392948345:layer:AWSSDKPandas-Python313:1"]
 
