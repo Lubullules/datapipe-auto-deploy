@@ -84,12 +84,14 @@ resource "aws_iam_policy" "lambda_s3_policy" {
       {
         "Effect" : "Allow",
         "Action" : [
+          "s3:ListBucket",
           "s3:GetObject",
           "s3:GetObjectAcl",
           "s3:PutObject",
           "s3:PutObjectAcl"
         ],
         "Resource" : [
+          "${aws_s3_bucket.bucket.arn}",
           "${aws_s3_bucket.bucket.arn}/*"
         ]
       }
