@@ -7,14 +7,14 @@ import awswrangler as wr
 
 # Config S3
 BUCKET_NAME = os.getenv("BUCKET_NAME")
-BASE_PATH = "raw/"  # Dossier sur S3
+BASE_PATH = "raw/"  # File on S3
 
 def fetch_crypto_data():
-    """Récupère les 1000 premières cryptos depuis CoinLore."""
+    """Get the data from the CoinLore API."""
     http = urllib3.PoolManager()
     cryptos = []
 
-    for start in range(0, 1000, 100):  # Paginer par 100 (limite API)
+    for start in range(0, 1000, 100):  # limited by the API
         url = f"https://api.coinlore.net/api/tickers/?start={start}&limit=100"
         response = http.request("GET", url)
 
@@ -27,27 +27,26 @@ def fetch_crypto_data():
     return cryptos
 
 def save_to_s3(data, timestamp):
-    """Sauvegarde les données en Parquet sous un fichier raw nommé data-{timestamp}.parquet."""
-    df = pd.DataFrame(data)  # Convertir en DataFrame Pandas
+    """Save the data to S3. Data is a list of dictionaries. Timestamp is a float."""
+    df = pd.DataFrame(data)  # Convert in pandas DataFrame
     
-    # Ajouter la colonne timestamp
+    # Add the timestamp column
     df["wf_timestamp"] = timestamp
 
-    # Formater le timestamp pour le nom du fichier
+    # Format the timestamp as a string for the file name
     timestamp_str = datetime.fromtimestamp(timestamp, tz=timezone.utc).strftime("%Y%m%d-%H%M%S")
 
 
-    # Nom du fichier sur S3
+    # Name of the file and path
     file_name = f"data-{timestamp_str}.parquet"
     s3_path = f"s3://{BUCKET_NAME}/{BASE_PATH}{file_name}"
 
-    # Sauvegarde en Parquet (désactivation de dataset pour garder le nom défini)
+    # Save the data to S3
     wr.s3.to_parquet(df=df, path=s3_path, dataset=False)
 
 def lambda_handler(event, context):
-    """Handler principal de la Lambda."""
     try:
-        # Récupérer le timestamp depuis l'event ou utiliser l'heure actuelle
+        # Get the timestamp
         timestamp = datetime.now(timezone.utc).timestamp()
 
         crypto_data = fetch_crypto_data()
@@ -56,7 +55,7 @@ def lambda_handler(event, context):
         return {
             "statusCode": 200,
             "body": json.dumps({
-                "message": "Donnees enregistrees sur S3"
+                "message": "Data saved successfully",
             }),
             "timestamp": timestamp
         }
