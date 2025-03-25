@@ -31,10 +31,11 @@ def save_to_s3(data, timestamp):
     df = pd.DataFrame(data)  # Convertir en DataFrame Pandas
     
     # Ajouter la colonne timestamp
-    df["timestamp"] = timestamp
+    df["wf_timestamp"] = timestamp
 
     # Formater le timestamp pour le nom du fichier
-    timestamp_str = datetime.utcfromtimestamp(timestamp).strftime("%Y%m%d-%H%M%S")
+    timestamp_str = datetime.fromtimestamp(timestamp, tz=timezone.utc).strftime("%Y%m%d-%H%M%S")
+
 
     # Nom du fichier sur S3
     file_name = f"data-{timestamp_str}.parquet"
@@ -47,7 +48,7 @@ def lambda_handler(event, context):
     """Handler principal de la Lambda."""
     try:
         # Récupérer le timestamp depuis l'event ou utiliser l'heure actuelle
-        timestamp = event.get("wf_timestamp", datetime.now(timezone.utc).timestamp())
+        timestamp = datetime.now(timezone.utc).timestamp()
 
         crypto_data = fetch_crypto_data()
         save_to_s3(crypto_data, timestamp)
@@ -55,9 +56,9 @@ def lambda_handler(event, context):
         return {
             "statusCode": 200,
             "body": json.dumps({
-                "message": "Donnees enregistrees sur S3",
-                "timestamp": timestamp
-            })
+                "message": "Donnees enregistrees sur S3"
+            }),
+            "timestamp": timestamp
         }
     
     except Exception as e:
