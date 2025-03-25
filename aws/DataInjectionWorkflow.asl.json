@@ -1,24 +1,14 @@
 {
   "Comment": "A description of my state machine",
-  "StartAt": "Pass: AssignVariable",
+  "StartAt": "Get Data From API",
   "States": {
-    "Pass: AssignVariable": {
-      "Type": "Pass",
-      "Next": "Get Data From API",
-      "Result": {
-        "wf_timestamp": "$now()"
-      }
-    },
     "Get Data From API": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
         "FunctionName": "${get_data_from_api_arn}",
-        "Payload": {
-          "timestampInfo.$": "$$.states.Pass: AssignVariable.Result.wf_timestamp",
-          "input.$": "$"
-        }
+        "Payload": "{% $states.input %}"
       },
       "Retry": [
         {
@@ -48,10 +38,7 @@
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
         "FunctionName": "${process_data_arn}",
-        "Payload": {
-          "timestampInfo.$": "$$.states.Pass: AssignVariable.Result.wf_timestamp",
-          "input.$": "$"
-        }
+        "Payload": "{% $states.input %}"
       },
       "Retry": [
         {
