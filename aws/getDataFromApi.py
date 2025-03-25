@@ -34,8 +34,7 @@ def save_to_s3(data, timestamp):
     df["wf_timestamp"] = timestamp
 
     # Name of the file and path
-    file_name = f"data-{timestamp}.parquet"
-    s3_path = f"s3://{BUCKET_NAME}/{BASE_PATH}{file_name}"
+    s3_path = f"s3://{BUCKET_NAME}/{BASE_PATH}"
 
     # Save the data to S3
     wr.s3.to_parquet(df=df, path=s3_path, dataset=True, partition_cols=["wf_timestamp"], index=False)
