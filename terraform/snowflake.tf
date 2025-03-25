@@ -51,13 +51,20 @@ resource "snowflake_stage" "my_stage" {
   schema              = snowflake_schema.my_schema.name
   storage_integration = snowflake_storage_integration.my_s3_integration.name
   url                 = "s3://${aws_s3_bucket.bucket}/processed/"
-  file_format         = "PARQUET"
+  file_format         = snowflake_file_format.parquet_file_format.name
+}
+
+resource "snowflake_file_format" "parquet_file_format" {
+  name        = "PARQUET_FILE_FORMAT"
+  database    = snowflake_database.my_database.name
+  schema      = snowflake_schema.my_schema.name
+  format_type = "PARQUET"
 }
 
 resource "snowflake_pipe" "my_pipe" {
   name        = "MY_PIPE"
   database    = snowflake_database.my_database.name
   schema      = snowflake_schema.my_schema.name
-  copy_statement = "COPY INTO MY_TABLE FROM @MY_STAGE FILE_FORMAT = (TYPE = 'PARQUET')"
+  copy_statement = "COPY INTO ${snowflake_table.my_table.name} FROM @${snowflake_stage.my_stage.name}"
   auto_ingest    = true
 }
