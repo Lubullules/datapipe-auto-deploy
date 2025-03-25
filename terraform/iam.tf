@@ -61,9 +61,8 @@ resource "aws_iam_policy" "step_functions_policy" {
           "lambda:InvokeFunction"
         ],
         "Resource" : [
-          "${aws_lambda_function.lambda_getDataFromApi_resource.arn}:*",
-          "${aws_lambda_function.lambda_s3DataUpload_resource.arn}:*",
-          "${aws_lambda_function.lambda_cleanTransformData_resource.arn}:*"
+          "${aws_lambda_function.lambda_getDataFromApi_resource.arn}",
+          "${aws_lambda_function.lambda_processData_resource.arn}",
         ]
       }
     ]
@@ -78,17 +77,21 @@ resource "aws_iam_role_policy_attachment" "sfn_policy_attachment" {
 
 #Create policy for Lambda
 resource "aws_iam_policy" "lambda_s3_policy" {
-  name = "${var.project_name}-${var.env}-LambdaPutInS3BucketPolicy"
+  name = "${var.project_name}-${var.env}-LambdaReadWriteS3BucketPolicy"
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
       {
         "Effect" : "Allow",
         "Action" : [
+          "s3:ListBucket",
+          "s3:GetObject",
+          "s3:GetObjectAcl",
           "s3:PutObject",
           "s3:PutObjectAcl"
         ],
         "Resource" : [
+          "${aws_s3_bucket.bucket.arn}",
           "${aws_s3_bucket.bucket.arn}/*"
         ]
       }
