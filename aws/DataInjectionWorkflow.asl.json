@@ -1,14 +1,23 @@
 {
   "Comment": "A description of my state machine",
-  "StartAt": "Get Data From API",
+  "StartAt": "Set Variables",
   "States": {
+    "Set Variables": {
+      "Type": "Pass",
+      "Next": "Get Data From API",
+      "Assign": {
+        "wf_timestamp": "{% $now() %}"
+      }
+    },
     "Get Data From API": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
-        "FunctionName": "${get_data_from_api_arn}",
-        "Payload": "{% $states.input %}"
+        "FunctionName": "arn:aws:lambda:eu-west-1:257394462879:function:project-data-finance-dev-getDataFromApi",
+        "Payload": {
+          "wf_timestamp": "{% $wf_timestamp %}"
+        }
       },
       "Retry": [
         {
@@ -26,7 +35,9 @@
       ],
       "Catch": [
         {
-          "ErrorEquals": ["States.ALL"],
+          "ErrorEquals": [
+            "States.ALL"
+          ],
           "Next": "Handle Get Data Error"
         }
       ],
@@ -37,8 +48,10 @@
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
-        "FunctionName": "${process_data_arn}",
-        "Payload": "{% $states.input %}"
+        "FunctionName": "arn:aws:lambda:eu-west-1:257394462879:function:project-data-finance-dev-processData",
+        "Payload": {
+          "wf_timestamp": "{% $wf_timestamp %}"
+        }
       },
       "Retry": [
         {
@@ -56,7 +69,9 @@
       ],
       "Catch": [
         {
-          "ErrorEquals": ["States.ALL"],
+          "ErrorEquals": [
+            "States.ALL"
+          ],
           "Next": "Handle Process Data Error"
         }
       ],

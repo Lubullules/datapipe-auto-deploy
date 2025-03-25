@@ -33,21 +33,19 @@ def save_to_s3(data, timestamp):
     # Add the timestamp column
     df["wf_timestamp"] = timestamp
 
-    # Format the timestamp as a string for the file name
-    timestamp_str = datetime.fromtimestamp(timestamp, tz=timezone.utc).strftime("%Y%m%d-%H%M%S")
-
-
     # Name of the file and path
-    file_name = f"data-{timestamp_str}.parquet"
+    file_name = f"data-{timestamp}.parquet"
     s3_path = f"s3://{BUCKET_NAME}/{BASE_PATH}{file_name}"
 
     # Save the data to S3
-    wr.s3.to_parquet(df=df, path=s3_path, dataset=False)
+    wr.s3.to_parquet(df=df, path=s3_path, dataset=True, partition_cols=["wf_timestamp"], index=False)
 
 def lambda_handler(event, context):
     try:
+        print(event)
         # Get the timestamp
-        timestamp = datetime.now(timezone.utc).timestamp()
+        timestamp = event.get("wf_timestamp")
+        print(timestamp)
 
         crypto_data = fetch_crypto_data()
         save_to_s3(crypto_data, timestamp)
@@ -61,7 +59,4 @@ def lambda_handler(event, context):
         }
     
     except Exception as e:
-        return {
-            "statusCode": 500,
-            "body": json.dumps({"error": str(e)})
-        }
+        raise ValueError(f"An error occurred: {str(e)}")
