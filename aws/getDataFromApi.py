@@ -57,7 +57,7 @@ def lambda_handler(event, context):
             "body": json.dumps({
                 "message": "Data saved successfully",
             }),
-            "timestamp": timestamp
+            "wf_timestamp": timestamp
         }
     
     except Exception as e:

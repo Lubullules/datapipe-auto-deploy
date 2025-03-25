@@ -9,7 +9,7 @@ def lambda_handler(event, context):
 
     try:
         # Get the POSIX timestamp from the event and format it
-        timestamp = event.get('timestamp', None)
+        timestamp = event.get('wf_timestamp', None)
 
         if timestamp is None:
             raise ValueError('No timestamp provided')
