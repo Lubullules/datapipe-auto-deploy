@@ -58,8 +58,6 @@ resource "snowflake_pipe" "my_pipe" {
   name        = "MY_PIPE"
   database    = snowflake_database.my_database.name
   schema      = snowflake_schema.my_schema.name
-  stage       = snowflake_stage.my_stage.name
-  warehouse   = snowflake_warehouse.my_warehouse.name
   copy_statement = "COPY INTO MY_TABLE FROM @MY_STAGE FILE_FORMAT = (TYPE = 'PARQUET')"
   auto_ingest    = true
 }
