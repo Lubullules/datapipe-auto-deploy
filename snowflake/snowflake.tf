@@ -35,15 +35,6 @@ resource "snowflake_table" "my_table" {
   }
 }
 
-resource "snowflake_storage_integration" "my_s3_integration" {
-  name        = "MY_S3_INTEGRATION"
-  type        = "EXTERNAL_STAGE"
-  enabled     = true
-
-  storage_provider         = "S3"
-  storage_aws_role_arn     = "<ARN_ROLE_AWS>"
-  storage_allowed_locations = ["s3://${aws_s3_bucket.bucket}/processed/"]
-}
 
 resource "snowflake_stage" "my_stage" {
   name                = "MY_STAGE"
@@ -67,4 +58,15 @@ resource "snowflake_pipe" "my_pipe" {
   schema      = snowflake_schema.my_schema.name
   copy_statement = "COPY INTO ${snowflake_table.my_table.name} FROM @${snowflake_stage.my_stage.name}"
   auto_ingest    = true
+}
+
+
+resource "snowflake_storage_integration" "my_s3_integration" {
+  name        = "MY_S3_INTEGRATION"
+  type        = "EXTERNAL_STAGE"
+  enabled     = true
+
+  storage_provider         = "S3"
+  storage_aws_role_arn     = "<ARN_ROLE_AWS>"
+  storage_allowed_locations = ["s3://${data.terraform_remote_state.aws.outputs.bucket}/processed/"]
 }
