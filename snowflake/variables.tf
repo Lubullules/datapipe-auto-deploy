@@ -5,7 +5,7 @@ variable "region" {
 
 variable "bucket" {
   type    = string
-  default = "test"
+  default = "aws-s3-base-bucket-project-test"
 }
 
 variable "key" {
