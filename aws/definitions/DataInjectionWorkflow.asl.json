@@ -33,14 +33,6 @@
           "JitterStrategy": "FULL"
         }
       ],
-      "Catch": [
-        {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "Next": "Handle Get Data Error"
-        }
-      ],
       "Next": "Process Data"
     },
     "Process Data": {
@@ -67,28 +59,7 @@
           "JitterStrategy": "FULL"
         }
       ],
-      "Catch": [
-        {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
-          "Next": "Handle Process Data Error"
-        }
-      ],
-      "Next": "Success"
-    },
-    "Handle Get Data Error": {
-      "Type": "Fail",
-      "Error": "GetDataFromApiFailed",
-      "Cause": "An error occurred while getting data from API."
-    },
-    "Handle Process Data Error": {
-      "Type": "Fail",
-      "Error": "ProcessDataFailed",
-      "Cause": "An error occurred while processing data."
-    },
-    "Success": {
-      "Type": "Succeed"
+      "End": true
     }
   },
   "QueryLanguage": "JSONata"
