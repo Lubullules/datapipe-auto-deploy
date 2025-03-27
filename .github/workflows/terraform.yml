@@ -87,7 +87,7 @@ jobs:
         id: export
         uses: actions/upload-artifact@v4
         with:
-          path: terraform/planfile
+          path: aws/planfile
           name: planfile
 
       #Terraform applying
