@@ -21,7 +21,12 @@ resource "snowflake_table" "my_table" {
 
   column {
     name = "id"
-    type = "NUMBER"
+    type = "STRING"
+  }
+
+  column {
+    name = "symbol"
+    type = "STRING"
   }
 
   column {
@@ -30,8 +35,68 @@ resource "snowflake_table" "my_table" {
   }
 
   column {
-    name = "created_at"
-    type = "TIMESTAMP"
+    name = "nameid"
+    type = "STRING"
+  }
+
+  column {
+    name = "price_usd"
+    type = "FLOAT"
+  }
+
+  column {
+    name = "percent_change_1h"
+    type = "FLOAT"
+  }
+
+  column {
+    name = "percent_change_24h"
+    type = "FLOAT"
+  }
+
+  column {
+    name = "percent_change_7d"
+    type = "FLOAT"
+  }
+
+  column {
+    name = "price_btc"
+    type = "FLOAT"
+  }
+
+  column {
+    name = "market_cap_usd"
+    type = "FLOAT"
+  }
+
+  column {
+    name = "volume24"
+    type = "FLOAT"
+  }
+
+  column {
+    name = "volume24a"
+    type = "FLOAT"
+  }
+
+  column {
+    name = "csupply"
+    type = "FLOAT"
+  }
+
+  column {
+    name = "tsupply"
+    type = "FLOAT"
+  }
+
+  column {
+    name = "msupply"
+    type = "FLOAT"
+  }
+
+  column {
+    name = "wf_timestamp"
+    type = "TIMESTAMP_TZ"
   }
 }
 
