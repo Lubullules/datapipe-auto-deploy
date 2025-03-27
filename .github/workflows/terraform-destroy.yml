@@ -20,7 +20,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: ./terraform
+        working-directory: ./aws
 
     steps:
       - name: Checkout the repository to the runner
@@ -75,7 +75,7 @@ jobs:
         id: export
         uses: actions/upload-artifact@v4
         with:
-          path: terraform/destroy-planfile
+          path: aws/destroy-planfile
           name: destroy-planfile
 
       #Terraform applying

@@ -30,7 +30,7 @@ jobs:
       run:
         shell: bash
         # We keep Terraform files in the terraform directory.
-        working-directory: ./terraform
+        working-directory: ./aws
 
     steps:
       - name: Checkout the repository to the runner
@@ -87,7 +87,7 @@ jobs:
         id: export
         uses: actions/upload-artifact@v4
         with:
-          path: terraform/planfile
+          path: aws/planfile
           name: planfile
 
       #Terraform applying

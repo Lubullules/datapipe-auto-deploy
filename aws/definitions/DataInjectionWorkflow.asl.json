@@ -1,14 +1,23 @@
 {
   "Comment": "A description of my state machine",
-  "StartAt": "Get Data From API",
+  "StartAt": "Set Variables",
   "States": {
+    "Set Variables": {
+      "Type": "Pass",
+      "Next": "Get Data From API",
+      "Assign": {
+        "wf_timestamp": "{% $now() %}"
+      }
+    },
     "Get Data From API": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
         "FunctionName": "${get_data_from_api_arn}",
-        "Payload": "{% $states.input %}"
+        "Payload": {
+          "wf_timestamp": "{% $wf_timestamp %}"
+        }
       },
       "Retry": [
         {
@@ -22,12 +31,6 @@
           "MaxAttempts": 3,
           "BackoffRate": 2,
           "JitterStrategy": "FULL"
-        }
-      ],
-      "Catch": [
-        {
-          "ErrorEquals": ["States.ALL"],
-          "Next": "Handle Get Data Error"
         }
       ],
       "Next": "Process Data"
@@ -38,7 +41,9 @@
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
         "FunctionName": "${process_data_arn}",
-        "Payload": "{% $states.input %}"
+        "Payload": {
+          "wf_timestamp": "{% $wf_timestamp %}"
+        }
       },
       "Retry": [
         {
@@ -54,26 +59,7 @@
           "JitterStrategy": "FULL"
         }
       ],
-      "Catch": [
-        {
-          "ErrorEquals": ["States.ALL"],
-          "Next": "Handle Process Data Error"
-        }
-      ],
-      "Next": "Success"
-    },
-    "Handle Get Data Error": {
-      "Type": "Fail",
-      "Error": "GetDataFromApiFailed",
-      "Cause": "An error occurred while getting data from API."
-    },
-    "Handle Process Data Error": {
-      "Type": "Fail",
-      "Error": "ProcessDataFailed",
-      "Cause": "An error occurred while processing data."
-    },
-    "Success": {
-      "Type": "Succeed"
+      "End": true
     }
   },
   "QueryLanguage": "JSONata"

@@ -1,5 +1,4 @@
 import os
-from datetime import datetime, timezone
 import pandas as pd
 import awswrangler as wr
 
@@ -13,13 +12,11 @@ def lambda_handler(event, context):
 
         if timestamp is None:
             raise ValueError('No timestamp provided')
-        
-        timestamp = datetime.fromtimestamp(timestamp, tz=timezone.utc).strftime('%Y%m%d-%H%M%S')
 
         # Read the data from the partition
         df = wr.s3.read_parquet(
-            path=f's3://{BUCKET_NAME}/raw/data-{timestamp}.parquet',
-            dataset=False,
+            path=f's3://{BUCKET_NAME}/raw/wf_timestamp={timestamp}',
+            dataset=True,
         )
 
         # Drop the 'rank' column
@@ -33,8 +30,11 @@ def lambda_handler(event, context):
         # Write the data to the partition
         wr.s3.to_parquet(
             df=df,
-            path=f's3://{BUCKET_NAME}/processed/processed_data-{timestamp}.parquet',
-            dataset=False,
+            path=f's3://{BUCKET_NAME}/processed/',
+            dataset=True,
+            partition_cols=['wf_timestamp'],
+            mode='append',
+            index=False
         )
 
         return {
