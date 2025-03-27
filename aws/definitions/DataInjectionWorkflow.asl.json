@@ -14,7 +14,7 @@
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
-        "FunctionName": "arn:aws:lambda:eu-west-1:257394462879:function:project-data-finance-dev-getDataFromApi",
+        "FunctionName": "${get_data_from_api_arn}",
         "Payload": {
           "wf_timestamp": "{% $wf_timestamp %}"
         }
@@ -40,7 +40,7 @@
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
-        "FunctionName": "arn:aws:lambda:eu-west-1:257394462879:function:project-data-finance-dev-processData",
+        "FunctionName": "process_data_arn",
         "Payload": {
           "wf_timestamp": "{% $wf_timestamp %}"
         }
