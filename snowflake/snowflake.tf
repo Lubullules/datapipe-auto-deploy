@@ -106,7 +106,7 @@ resource "snowflake_stage" "my_stage" {
   database            = snowflake_database.my_database.name
   schema              = snowflake_schema.my_schema.name
   storage_integration = snowflake_storage_integration.my_s3_integration.name
-  url = "s3://${data.aws_s3_bucket.existing_bucket.id}/processed/"
+  url = "s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/"
   file_format         = snowflake_file_format.parquet_file_format.name
 }
 
@@ -133,5 +133,5 @@ resource "snowflake_storage_integration" "my_s3_integration" {
 
   storage_provider         = "S3"
   storage_aws_role_arn     = "<ARN_ROLE_AWS>"
-  storage_allowed_locations = ["s3://${data.terraform_remote_state.aws.outputs.bucket_name}/processed/"]
+  storage_allowed_locations = ["s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/"]
 }
