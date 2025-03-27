@@ -2,8 +2,8 @@ output "project_name" {
   value = var.project_name
 }
 
-output s3_bucket_name {
-  value       = aws_s3_bucket.bucket.bucket
+output "s3_bucket_name" {
+  value = aws_s3_bucket.bucket.bucket
 }
 
 # output s3_bucket_arn {
