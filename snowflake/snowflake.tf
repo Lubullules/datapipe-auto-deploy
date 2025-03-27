@@ -106,7 +106,7 @@ resource "snowflake_stage" "my_stage" {
   database            = snowflake_database.my_database.name
   schema              = snowflake_schema.my_schema.name
   storage_integration = snowflake_storage_integration.my_s3_integration.name
-  url                 = "s3://${aws_s3_bucket.bucket}/processed/"
+  url = "s3://${data.terraform_remote_state.aws.outputs.bucket_name}/processed/"
   file_format         = snowflake_file_format.parquet_file_format.name
 }
 

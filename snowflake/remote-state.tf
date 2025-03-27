@@ -8,5 +8,5 @@ data "terraform_remote_state" "aws" {
   }
 }
 output "bucket_name" {
-  value = aws_s3_bucket.bucket.id
+  value = data.aws_s3_bucket.existing_bucket.id
 }
