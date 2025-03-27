@@ -2,7 +2,7 @@
 resource "aws_lambda_function" "lambda_getDataFromApi_resource" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
-  filename      = "aws/definitions/getDataFromApi.zip"
+  filename      = "${path.module}/definitions/getDataFromApi.zip"
   function_name = "${var.project_name}-${var.env}-getDataFromApi"
   role          = aws_iam_role.iam_lambda_role.arn
   handler       = "getDataFromApi.lambda_handler"
@@ -25,7 +25,7 @@ resource "aws_lambda_function" "lambda_getDataFromApi_resource" {
 resource "aws_lambda_function" "lambda_processData_resource" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
-  filename      = "aws/definitions/processData.zip"
+  filename      = "${path.module}/definitions/processData.zip"
   function_name = "${var.project_name}-${var.env}-processData"
   role          = aws_iam_role.iam_lambda_role.arn
   handler       = "processData.lambda_handler"
