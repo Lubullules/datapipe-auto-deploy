@@ -23,13 +23,13 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  terraform:
-    name: "Terraform Infrastructure Change Management"
+  # Deploying AWS infrastructure
+  aws_terraform:
+    name: "AWS Infrastructure Change"
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
-        # We keep Terraform files in the terraform directory.
         working-directory: ./aws
 
     steps:
@@ -40,8 +40,6 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.3.0
-
-
 
       #Terraform initialisation 
       - name: Load environment variables
@@ -78,7 +76,7 @@ jobs:
           secret: ${{secrets.ISSUE_WRITING_TOKEN}}
           approvers: NAPondu, Aradjin
           minimum-approvals: 1
-          issue-title: "Deploying new terraform plan"
+          issue-title: "Deploying new terraform plan for AWS infrastructure"
           issue-body: "Please approve or deny the terraform deployment plan"
           exclude-workflow-initiator-as-approver: false
 
@@ -88,6 +86,77 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: aws/planfile
+          name: planfile
+
+      #Terraform applying
+      - name: Terraform applying
+        id: apply
+        run: terraform apply planfile
+
+
+  # Deploying Snowflake infrastructure
+  snowflake_terraform:
+    name: "Snowflake Infrastructure Change"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./snowflake
+
+    steps:
+      - name: Checkout the repository to the runner
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform with specified version on the runner
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.0
+
+      #Terraform initialisation 
+      - name: Load environment variables
+        id: load-vars
+        run: source $ENV_FILE && echo "Loaded $ENV_FILE"
+
+      - name: Terraform init
+        id: init
+        env:
+          BUCKET_TF_STATE: ${{ env.BUCKET_TF_STATE }}
+          KEY_TF_STATE: ${{ env.KEY_TF_STATE }}
+        run: terraform init  -backend-config="region=eu-west-1" -backend-config="bucket=$BUCKET_TF_STATE" -backend-config="key=$KEY_TF_STATE"
+      
+      - name: Terraform format
+        id: fmt
+        run: terraform fmt -check
+      
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
+
+      #Terraform planning
+      - name: Terraform planning
+        id: plan
+        run: terraform plan -out planfile
+        continue-on-error: false    
+
+      #Manual approval before applying plan if not by scheduler
+      - if: github.event_name != 'schedule'
+        name: Manual approval
+        id: approve
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{secrets.ISSUE_WRITING_TOKEN}}
+          approvers: NAPondu, Aradjin
+          minimum-approvals: 1
+          issue-title: "Deploying new terraform plan for Snowflake infrastructure"
+          issue-body: "Please approve or deny the terraform deployment plan"
+          exclude-workflow-initiator-as-approver: false
+
+      #Export planfile
+      - name: Export planfile
+        id: export
+        uses: actions/upload-artifact@v4
+        with:
+          path: snowflake/planfile
           name: planfile
 
       #Terraform applying

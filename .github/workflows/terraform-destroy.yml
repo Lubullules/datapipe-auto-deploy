@@ -14,7 +14,8 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  terraform-destroy:
+  # Destroying AWS infrastructure
+  aws_terraform-destroy:
     name: "Terraform Infrastructure Destruction"
     runs-on: ubuntu-latest
     defaults:
@@ -66,7 +67,7 @@ jobs:
           secret: ${{secrets.ISSUE_WRITING_TOKEN}}
           approvers: NAPondu, Aradjin
           minimum-approvals: 1
-          issue-title: "Destroying terraform infrastructure"
+          issue-title: "Destroying AWS terraform infrastructure"
           issue-body: "Please approve or deny the destruction of the terraform infrastructure"
           exclude-workflow-initiator-as-approver: false
 
@@ -76,6 +77,76 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: aws/destroy-planfile
+          name: destroy-planfile
+
+      #Terraform applying
+      - name: Terraform applying
+        id: apply
+        run: terraform apply destroy-planfile
+
+  # Destroying Snowflake infrastructure
+  snowflake_terraform-destroy:
+    name: "Terraform Infrastructure Destruction"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./snowflake
+
+    steps:
+      - name: Checkout the repository to the runner
+        uses: actions/checkout@v2
+  
+      - name: Setup Terraform with specified version on the runner
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.0
+
+      #Terraform initialisation 
+      - name: Load environment variables
+        id: load-vars
+        run: source $ENV_FILE && echo "Loaded $ENV_FILE"
+
+      - name: Terraform init
+        id: init
+        env:
+          BUCKET_TF_STATE: ${{ env.BUCKET_TF_STATE }}
+          KEY_TF_STATE: ${{ env.KEY_TF_STATE }}
+        run: terraform init  -backend-config="region=eu-west-1" -backend-config="bucket=$BUCKET_TF_STATE" -backend-config="key=$KEY_TF_STATE"
+  
+      - name: Terraform format
+        id: fmt
+        run: terraform fmt -check
+      
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
+
+      #Terraform planning
+      - name: Terraform planning
+        id: plan
+        run: terraform plan -destroy -out destroy-planfile
+        continue-on-error: false    
+
+      #Manual approval before applying plan
+      - if: github.event_name != 'schedule'
+        name: Manual approval
+        id: approve
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{secrets.ISSUE_WRITING_TOKEN}}
+          approvers: NAPondu, Aradjin
+          minimum-approvals: 1
+          issue-title: "Destroying Snowflake terraform infrastructure"
+          issue-body: "Please approve or deny the destruction of the terraform infrastructure"
+          exclude-workflow-initiator-as-approver: false
+
+      #Export planfile
+      - name: Export planfile
+        id: export
+        uses: actions/upload-artifact@v4
+        with:
+          path: snowflake/destroy-planfile
           name: destroy-planfile
 
       #Terraform applying
