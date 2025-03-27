@@ -2,7 +2,6 @@ import urllib3
 import os
 import json
 import pandas as pd
-from datetime import datetime, timezone
 import awswrangler as wr
 
 # Config S3
@@ -41,20 +40,15 @@ def save_to_s3(data, timestamp):
 
 def lambda_handler(event, context):
     try:
-        print(event)
         # Get the timestamp
         timestamp = event.get("wf_timestamp")
-        print(timestamp)
 
         crypto_data = fetch_crypto_data()
         save_to_s3(crypto_data, timestamp)
 
         return {
             "statusCode": 200,
-            "body": json.dumps({
-                "message": "Data saved successfully",
-            }),
-            "wf_timestamp": timestamp
+            "body": "Data saved successfully",
         }
     
     except Exception as e:
