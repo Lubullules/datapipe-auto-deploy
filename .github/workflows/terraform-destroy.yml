@@ -20,7 +20,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: ./terraform
+        working-directory: ./aws
 
     steps:
       - name: Checkout the repository to the runner
