@@ -27,12 +27,15 @@ def lambda_handler(event, context):
         for key in keys_to_float:
             df[key] = pd.to_numeric(df[key], errors='coerce')
 
+        # Duplicate the 'wf_timestamp' column to keep after partitioning
+        df['wf_timestamp_partition'] = df['wf_timestamp'].astype(str)
+
         # Write the data to the partition
         wr.s3.to_parquet(
             df=df,
             path=f's3://{BUCKET_NAME}/processed/',
             dataset=True,
-            partition_cols=['wf_timestamp'],
+            partition_cols=['wf_timestamp_partition'],
             mode='append',
             index=False
         )
