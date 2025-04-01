@@ -12,4 +12,6 @@ provider "snowflake" {
   authenticator     = "SNOWFLAKE_JWT"
   private_key       = var.snowflake_private_key
   role              = var.snowflake_role
+
+  preview_features_enabled = true
 }
