@@ -138,7 +138,7 @@ jobs:
         run: terraform plan -out planfile
         continue-on-error: false    
         env:
-          SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
+          TF_VAR_snowflake_private_key: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
 
       #Manual approval before applying plan if not by scheduler
       - if: github.event_name != 'schedule'
@@ -166,4 +166,4 @@ jobs:
         id: apply
         run: terraform apply planfile
         env:
-          SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
+          TF_VAR_snowflake_private_key: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
