@@ -29,11 +29,11 @@ variable "snowflake_user" {
 }
 
 variable "snowflake_private_key" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "snowflake_role" {
-  type = string
+  type    = string
   default = "TF-SNOW-ROLE"
 }
