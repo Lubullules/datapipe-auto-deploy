@@ -8,13 +8,13 @@ resource "snowflake_warehouse" "my_warehouse" {
 resource "snowflake_database" "my_database" {
   name = "MY_DATABASE"
 
-  depends_on = [ snowflake_query.switch_warehouses ]
+  depends_on = [snowflake_query.switch_warehouses]
 }
 
 resource "snowflake_schema" "my_schema" {
-  name     = "MY_SCHEMA"
-  database = snowflake_database.my_database.name
-  depends_on = [ snowflake_grant_database_role.tf-snow-role_grant ]
+  name       = "MY_SCHEMA"
+  database   = snowflake_database.my_database.name
+  depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
 }
 
 resource "snowflake_table" "my_table" {
@@ -22,7 +22,7 @@ resource "snowflake_table" "my_table" {
   database = snowflake_database.my_database.name
   schema   = snowflake_schema.my_schema.name
 
-  depends_on = [ snowflake_grant_database_role.tf-snow-role_grant ]
+  depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
 
   column {
     name = "id"
