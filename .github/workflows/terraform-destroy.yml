@@ -128,7 +128,7 @@ jobs:
         run: terraform plan -destroy -out destroy-planfile
         continue-on-error: false    
         env:
-          SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
+          TF_VAR_SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
 
       #Manual approval before applying plan
       - if: github.event_name != 'schedule'
@@ -156,4 +156,4 @@ jobs:
         id: apply
         run: terraform apply destroy-planfile
         env:
-          SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
+          TF_VAR_SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
