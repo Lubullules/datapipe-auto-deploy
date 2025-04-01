@@ -7,8 +7,6 @@ resource "snowflake_warehouse" "my_warehouse" {
 
 resource "snowflake_database" "my_database" {
   name = "MY_DATABASE"
-
-  depends_on = [snowflake_query.switch_warehouses]
 }
 
 resource "snowflake_schema" "my_schema" {
