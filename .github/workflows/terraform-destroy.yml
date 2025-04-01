@@ -76,7 +76,7 @@ jobs:
         id: export
         uses: actions/upload-artifact@v4
         with:
-          path: aws/destroy-planfile
+          path: aws/aws_destroy-planfile
           name: aws_destroy-planfile
 
       #Terraform applying
@@ -148,7 +148,7 @@ jobs:
         id: export
         uses: actions/upload-artifact@v4
         with:
-          path: snowflake/destroy-planfile
+          path: snowflake/snowflake_destroy-planfile
           name: snowflake_destroy-planfile
 
       #Terraform applying

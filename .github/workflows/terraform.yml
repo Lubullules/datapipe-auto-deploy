@@ -85,7 +85,7 @@ jobs:
         id: export
         uses: actions/upload-artifact@v4
         with:
-          path: aws/planfile
+          path: aws/aws_planfile
           name: aws_planfile
 
       #Terraform applying
@@ -158,7 +158,7 @@ jobs:
         id: export
         uses: actions/upload-artifact@v4
         with:
-          path: snowflake/planfile
+          path: snowflake/snowflake_planfile
           name: snowflake_planfile
 
       #Terraform applying
