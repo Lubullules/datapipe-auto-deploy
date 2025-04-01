@@ -77,12 +77,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: aws/destroy-planfile
-          name: destroy-planfile
+          name: aws_destroy-planfile
 
       #Terraform applying
       - name: Terraform applying
         id: apply
-        run: terraform apply destroy-planfile
+        run: terraform apply aws_destroy-planfile
 
   # Destroying Snowflake infrastructure
   snowflake_terraform-destroy:
@@ -149,7 +149,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: snowflake/destroy-planfile
-          name: destroy-planfile
+          name: snowflake_destroy-planfile
 
       #Terraform applying
       - name: Terraform applying

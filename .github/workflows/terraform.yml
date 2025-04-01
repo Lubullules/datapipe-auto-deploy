@@ -86,7 +86,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: aws/planfile
-          name: planfile
+          name: aws_planfile
 
       #Terraform applying
       - name: Terraform applying
@@ -159,7 +159,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: snowflake/planfile
-          name: planfile
+          name: snowflake_planfile
 
       #Terraform applying
       - name: Terraform applying
