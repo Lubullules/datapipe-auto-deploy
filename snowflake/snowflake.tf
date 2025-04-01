@@ -7,12 +7,14 @@ resource "snowflake_warehouse" "my_warehouse" {
 
 resource "snowflake_database" "my_database" {
   name = "MY_DATABASE"
+
+  depends_on = [ snowflake_query.switch_warehouses ]
 }
 
 resource "snowflake_schema" "my_schema" {
   name     = "MY_SCHEMA"
   database = snowflake_database.my_database.name
-  depends_on = [ snowflake_grant_privileges_to_database_role.tf-snow-role_grant ]
+  depends_on = [ snowflake_grant_database_role.tf-snow-role_grant ]
 }
 
 resource "snowflake_table" "my_table" {
@@ -20,7 +22,7 @@ resource "snowflake_table" "my_table" {
   database = snowflake_database.my_database.name
   schema   = snowflake_schema.my_schema.name
 
-  depends_on = [ snowflake_grant_privileges_to_database_role.tf-snow-role_grant ]
+  depends_on = [ snowflake_grant_database_role.tf-snow-role_grant ]
 
   column {
     name = "id"
@@ -112,7 +114,7 @@ resource "snowflake_stage" "my_stage" {
   url                 = "s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/"
   file_format         = snowflake_file_format.parquet_file_format.name
 
-  depends_on = [ snowflake_grant_privileges_to_database_role.tf-snow-role_grant ]
+  depends_on = [ snowflake_grant_database_role.tf-snow-role_grant ]
 }
 
 resource "snowflake_file_format" "parquet_file_format" {
@@ -129,7 +131,7 @@ resource "snowflake_pipe" "my_pipe" {
   copy_statement = "COPY INTO ${snowflake_table.my_table.name} FROM @${snowflake_stage.my_stage.name}"
   auto_ingest    = true
 
-  depends_on = [ snowflake_grant_privileges_to_database_role.tf-snow-role_grant ]
+  depends_on = [ snowflake_grant_database_role.tf-snow-role_grant ]
 }
 
 
