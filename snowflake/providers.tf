@@ -6,10 +6,10 @@ terraform {
   }
 }
 provider "snowflake" {
-  role = "ACCOUNTADMIN"
-  organization_name = "JLWJSHF"
-  account_name = "BJ18758"
-  user = "TF-SNOW"
+  organization_name = var.snowflake_org_name
+  account_name = var.snowflake_account_name
+  user = var.snowflake_user
   authenticator = "SNOWFLAKE_JWT"
-  private_key = "${file("~/.ssh/snowflake_tf_snow_key.p8")}"
+  private_key = var.snowflake_private_key
+  role = var.snowflake_role
 }
