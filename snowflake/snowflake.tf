@@ -106,41 +106,41 @@ resource "snowflake_table" "my_table" {
 }
 
 
-resource "snowflake_stage" "my_stage" {
-  name                = "MY_STAGE"
-  database            = snowflake_database.my_database.name
-  schema              = snowflake_schema.my_schema.name
-  storage_integration = snowflake_storage_integration.my_s3_integration.name
-  url                 = "s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/"
-  file_format         = snowflake_file_format.parquet_file_format.name
+# resource "snowflake_stage" "my_stage" {
+#   name                = "MY_STAGE"
+#   database            = snowflake_database.my_database.name
+#   schema              = snowflake_schema.my_schema.name
+#   storage_integration = snowflake_storage_integration.my_s3_integration.name
+#   url                 = "s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/"
+#   file_format         = snowflake_file_format.parquet_file_format.name
 
-  depends_on = [ snowflake_grant_database_role.tf-snow-role_grant ]
-}
+#   depends_on = [ snowflake_grant_database_role.tf-snow-role_grant ]
+# }
 
-resource "snowflake_file_format" "parquet_file_format" {
-  name        = "PARQUET_FILE_FORMAT"
-  database    = snowflake_database.my_database.name
-  schema      = snowflake_schema.my_schema.name
-  format_type = "PARQUET"
-}
+# resource "snowflake_file_format" "parquet_file_format" {
+#   name        = "PARQUET_FILE_FORMAT"
+#   database    = snowflake_database.my_database.name
+#   schema      = snowflake_schema.my_schema.name
+#   format_type = "PARQUET"
+# }
 
-resource "snowflake_pipe" "my_pipe" {
-  name           = "MY_PIPE"
-  database       = snowflake_database.my_database.name
-  schema         = snowflake_schema.my_schema.name
-  copy_statement = "COPY INTO ${snowflake_table.my_table.name} FROM @${snowflake_stage.my_stage.name}"
-  auto_ingest    = true
+# resource "snowflake_pipe" "my_pipe" {
+#   name           = "MY_PIPE"
+#   database       = snowflake_database.my_database.name
+#   schema         = snowflake_schema.my_schema.name
+#   copy_statement = "COPY INTO ${snowflake_table.my_table.name} FROM @${snowflake_stage.my_stage.name}"
+#   auto_ingest    = true
 
-  depends_on = [ snowflake_grant_database_role.tf-snow-role_grant ]
-}
+#   depends_on = [ snowflake_grant_database_role.tf-snow-role_grant ]
+# }
 
 
-resource "snowflake_storage_integration" "my_s3_integration" {
-  name    = "MY_S3_INTEGRATION"
-  type    = "EXTERNAL_STAGE"
-  enabled = true
+# resource "snowflake_storage_integration" "my_s3_integration" {
+#   name    = "MY_S3_INTEGRATION"
+#   type    = "EXTERNAL_STAGE"
+#   enabled = true
 
-  storage_provider          = "S3"
-  storage_aws_role_arn      = "<ARN_ROLE_AWS>"
-  storage_allowed_locations = ["s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/"]
-}
+#   storage_provider          = "S3"
+#   storage_aws_role_arn      = "<ARN_ROLE_AWS>"
+#   storage_allowed_locations = ["s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/"]
+# }
