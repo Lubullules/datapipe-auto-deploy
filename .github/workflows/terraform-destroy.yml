@@ -16,7 +16,7 @@ env:
 jobs:
   # Destroying AWS infrastructure
   aws_terraform-destroy:
-    name: "Terraform Infrastructure Destruction"
+    name: "AWS Infrastructure Destruction"
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -55,7 +55,7 @@ jobs:
       #Terraform planning
       - name: Terraform planning
         id: plan
-        run: terraform plan -destroy -out destroy-planfile
+        run: terraform plan -destroy -out aws_destroy-planfile
         continue-on-error: false    
 
       #Manual approval before applying plan
@@ -86,7 +86,7 @@ jobs:
 
   # Destroying Snowflake infrastructure
   snowflake_terraform-destroy:
-    name: "Terraform Infrastructure Destruction"
+    name: "Snowflake Infrastructure Destruction"
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -125,7 +125,7 @@ jobs:
       #Terraform planning
       - name: Terraform planning
         id: plan
-        run: terraform plan -destroy -out destroy-planfile
+        run: terraform plan -destroy -out snowflake_destroy-planfile
         continue-on-error: false    
         env:
           TF_VAR_snowflake_private_key: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
@@ -154,6 +154,6 @@ jobs:
       #Terraform applying
       - name: Terraform applying
         id: apply
-        run: terraform apply destroy-planfile
+        run: terraform apply snowflake_destroy-planfile
         env:
           TF_VAR_snowflake_private_key: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}

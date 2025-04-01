@@ -64,7 +64,7 @@ jobs:
       #Terraform planning
       - name: Terraform planning
         id: plan
-        run: terraform plan -out planfile
+        run: terraform plan -out aws_planfile
         continue-on-error: false    
 
       #Manual approval before applying plan if not by scheduler
@@ -91,7 +91,7 @@ jobs:
       #Terraform applying
       - name: Terraform applying
         id: apply
-        run: terraform apply planfile
+        run: terraform apply aws_planfile
 
 
   # Deploying Snowflake infrastructure
@@ -135,7 +135,7 @@ jobs:
       #Terraform planning
       - name: Terraform planning
         id: plan
-        run: terraform plan -out planfile
+        run: terraform plan -out snowflake_planfile
         continue-on-error: false    
         env:
           TF_VAR_snowflake_private_key: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
@@ -164,6 +164,6 @@ jobs:
       #Terraform applying
       - name: Terraform applying
         id: apply
-        run: terraform apply planfile
+        run: terraform apply snowflake_planfile
         env:
           TF_VAR_snowflake_private_key: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
