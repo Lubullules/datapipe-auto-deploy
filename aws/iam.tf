@@ -132,3 +132,48 @@ resource "aws_iam_role_policy_attachment" "scheduler_policy_attachment" {
   role       = aws_iam_role.iam_scheduler_role.name
   policy_arn = aws_iam_policy.scheduler_sfn_policy.arn
 }
+
+#Create role for Snowflake Snowpipe
+resource "aws_iam_role" "iam_snowpipe_role" {
+  name = "${var.project_name}-${var.env}-SnowpipeRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "snowflake.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+#Create policy for Snowpipe
+resource "aws_iam_policy" "snowpipe_s3_policy" {
+  name = "${var.project_name}-${var.env}-SnowpipeS3Policy"
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket"
+        ],
+        "Resource" : [
+          "${aws_s3_bucket.bucket.arn}",
+          "${aws_s3_bucket.bucket.arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
+#Attach policy for Snowpipe
+resource "aws_iam_role_policy_attachment" "snowpipe_policy_attachment" {
+  role       = aws_iam_role.iam_snowpipe_role.name
+  policy_arn = aws_iam_policy.snowpipe_s3_policy.arn
+}

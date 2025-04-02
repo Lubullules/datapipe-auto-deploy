@@ -35,6 +35,6 @@ resource "snowflake_storage_integration" "my_s3_integration" {
   enabled = true
 
   storage_provider          = "S3"
-  storage_aws_role_arn      = "<ARN_ROLE_AWS>"
+  storage_aws_role_arn      = data.terraform_remote_state.aws.outputs.snowpipe_role_arn
   storage_allowed_locations = ["s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/"]
 }
