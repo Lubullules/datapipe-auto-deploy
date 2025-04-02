@@ -3,6 +3,10 @@ terraform {
     snowflake = {
       source = "Snowflake-Labs/snowflake"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
   }
 }
 provider "snowflake" {
