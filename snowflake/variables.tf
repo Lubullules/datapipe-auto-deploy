@@ -13,6 +13,11 @@ variable "key" {
   default = "test-remote-config-lock-bug/terraform.tfstate"
 }
 
+variable "aws_key" {
+  type    = string
+  default = "test-remote-config-lock-bug/terraform.tfstate"
+}
+
 variable "snowflake_org_name" {
   type    = string
   default = "JLWJSHF"
