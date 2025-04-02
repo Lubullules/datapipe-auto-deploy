@@ -13,5 +13,5 @@ provider "snowflake" {
   private_key       = var.snowflake_private_key
   role              = var.snowflake_role
 
-  preview_features_enabled = ["snowflake_table_resource"]
+  preview_features_enabled = ["snowflake_table_resource", "snowflake_file_format_resource"]
 }
