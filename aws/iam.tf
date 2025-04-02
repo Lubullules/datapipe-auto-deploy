@@ -142,7 +142,7 @@ resource "aws_iam_role" "iam_snowpipe_role" {
       {
         Effect = "Allow",
         Principal = {
-          AWS = "arn:aws:iam::jlwjshf-bj18758:role/TF-SNOW-ROLE"
+          AWS = "arn:aws:iam::JLWJSHF-BJ18758:role/TF-SNOW-ROLE"
         },
         Action = "sts:AssumeRole"
       }
