@@ -22,7 +22,7 @@ resource "snowflake_pipe" "my_pipe" {
   name           = "MY_PIPE"
   database       = snowflake_database.my_database.name
   schema         = snowflake_schema.my_schema.name
-  copy_statement = "COPY INTO ${snowflake_table.my_table.name} FROM @${snowflake_stage.my_stage.name}"
+  copy_statement = "COPY INTO ${snowflake_table.my_table.fully_qualified_name} FROM @${snowflake_stage.my_stage.name}"
   auto_ingest    = true
 
   depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
