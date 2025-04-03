@@ -133,7 +133,13 @@ resource "aws_iam_role_policy_attachment" "scheduler_policy_attachment" {
   policy_arn = aws_iam_policy.scheduler_sfn_policy.arn
 }
 
-#Create role for Snowflake Snowpipe
+#Create a random external ID for the Snowpipe role
+resource "random_string" "snowpipe_external_id" {
+  length  = 16
+  special = false
+}
+
+#Create role for Snowpipe
 resource "aws_iam_role" "iam_snowpipe_role" {
   name = "${var.project_name}-${var.env}-SnowpipeRole"
   assume_role_policy = jsonencode({
@@ -144,7 +150,12 @@ resource "aws_iam_role" "iam_snowpipe_role" {
         Principal = {
           AWS = "arn:aws:iam::296062579650:user/jqyv0000-s"
         },
-        Action = "sts:AssumeRole"
+        Action = "sts:AssumeRole",
+        Condition = {
+          StringEquals = {
+            "sts:ExternalId" = "${random_string.snowpipe_external_id.result}"
+          }
+        }
       }
     ]
   })
