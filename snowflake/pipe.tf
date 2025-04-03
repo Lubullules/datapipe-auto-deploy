@@ -21,7 +21,7 @@ resource "snowflake_file_format" "parquet_file_format" {
 resource "snowflake_pipe" "my_pipe" {
   name           = "MY_PIPE"
   database       = snowflake_database.my_database.fully_qualified_name
-  schema         = snowflake_schema.my_schema.fully_qualified_name
+  schema         = snowflake_schema.my_schema.name
   copy_statement = "COPY INTO ${snowflake_table.my_table.fully_qualified_name} FROM @${snowflake_stage.my_stage.fully_qualified_name} FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = 'CASE_INSENSITIVE'"
   auto_ingest    = true
 
