@@ -40,6 +40,6 @@ resource "snowflake_storage_integration" "my_s3_integration" {
 }
 
 resource "snowflake_execute" "my_s3_integration_update" {
-  execute = "ALTER STORAGE INTEGRATION ${snowflake_storage_integration.my_s3_integration.name} TYPE = EXTERNAL_STAGE STORAGE_PROVIDER = 'S3' ENABLED = TRUE STORAGE_AWS_IAM_USER_ARN = '${data.terraform_remote_state.aws.outputs.snowpipe_role_arn}' STORAGE_ALLOWED_LOCATIONS = ('s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/') STORAGE_BLOCKED_LOCATIONS = ('s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/raw/') STORAGE_AWS_EXTERNAL_ID = '${data.terraform_remote_state.aws.outputs.snowpipe_external_id}'"
-  revert  = "ALTER STORAGE INTEGRATION ${snowflake_storage_integration.my_s3_integration.name} TYPE = EXTERNAL_STAGE STORAGE_PROVIDER = 'S3' ENABLED = TRUE STORAGE_AWS_IAM_USER_ARN = '${data.terraform_remote_state.aws.outputs.snowpipe_role_arn}' STORAGE_ALLOWED_LOCATIONS = ('s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/') STORAGE_BLOCKED_LOCATIONS = ('s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/raw/')"
+  execute = "ALTER STORAGE INTEGRATION ${snowflake_storage_integration.my_s3_integration.name} SET STORAGE_AWS_EXTERNAL_ID = '${data.terraform_remote_state.aws.outputs.snowpipe_external_id}'"
+  revert  = "ALTER STORAGE INTEGRATION ${snowflake_storage_integration.my_s3_integration.name} UNSET STORAGE_AWS_EXTERNAL_ID"
 }
