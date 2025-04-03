@@ -6,7 +6,7 @@ resource "snowflake_stage" "my_stage" {
   url                 = "s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/"
   file_format         = "FORMAT_NAME = ${snowflake_file_format.parquet_file_format.fully_qualified_name}"
 
-  depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
+  depends_on = [snowflake_grant_database_role.tf-snow-role_grant, snowflake_execute.my_s3_integration]
 }
 
 resource "snowflake_file_format" "parquet_file_format" {
