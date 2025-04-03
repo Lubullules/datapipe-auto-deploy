@@ -2,7 +2,7 @@ resource "snowflake_stage" "my_stage" {
   name                = "MY_STAGE"
   database            = snowflake_database.my_database.name
   schema              = snowflake_schema.my_schema.name
-  storage_integration = var.my_s3_integration_name
+  storage_integration = snowflake_storage_integration.my_s3_integration.name
   url                 = "s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/"
   file_format         = "FORMAT_NAME = ${snowflake_file_format.parquet_file_format.fully_qualified_name}"
 
@@ -28,11 +28,18 @@ resource "snowflake_pipe" "my_pipe" {
   depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
 }
 
-variable "my_s3_integration_name" {
-  default = "MY_S3_INTEGRATION"
+resource "snowflake_storage_integration" "my_s3_integration" {
+  name = "MY_S3_INTEGRATION"
+  type = "EXTERNAL_STAGE"
+  storage_provider = "S3"
+  enabled = true
+
+  storage_aws_iam_user_arn = data.terraform_remote_state.aws.outputs.snowpipe_role_arn
+  storage_allowed_locations = ["s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/"]
+  storage_blocked_locations = ["s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/raw/"]  
 }
 
 resource "snowflake_execute" "my_s3_integration" {
-  execute = "CREATE STORAGE INTEGRATION ${var.my_s3_integration_name} TYPE = EXTERNAL_STAGE STORAGE_PROVIDER = 'S3' ENABLED = TRUE STORAGE_AWS_IAM_USER_ARN = '${data.terraform_remote_state.aws.outputs.snowpipe_role_arn}' STORAGE_ALLOWED_LOCATIONS = ('s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/') STORAGE_BLOCKED_LOCATIONS = ('s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/raw/') STORAGE_AWS_EXTERNAL_ID = '${data.terraform_remote_state.aws.outputs.snowpipe_external_id}'"
-  revert  = "DROP STORAGE INTEGRATION ${var.my_s3_integration_name}"
+  execute = "REPLACE STORAGE INTEGRATION ${snowflake_storage_integration.my_s3_integration.name} TYPE = EXTERNAL_STAGE STORAGE_PROVIDER = 'S3' ENABLED = TRUE STORAGE_AWS_IAM_USER_ARN = '${data.terraform_remote_state.aws.outputs.snowpipe_role_arn}' STORAGE_ALLOWED_LOCATIONS = ('s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/') STORAGE_BLOCKED_LOCATIONS = ('s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/raw/') STORAGE_AWS_EXTERNAL_ID = '${data.terraform_remote_state.aws.outputs.snowpipe_external_id}'"
+  revert  = "DROP STORAGE INTEGRATION ${snowflake_storage_integration.my_s3_integration.name}"
 }
