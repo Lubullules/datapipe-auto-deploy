@@ -145,11 +145,6 @@ resource "aws_iam_role" "iam_snowpipe_role" {
           AWS = "arn:aws:iam::296062579650:user/jqyv0000-s"
         },
         Action = "sts:AssumeRole",
-        Condition = {
-          StringEquals = {
-            "sts:ExternalId" = "0000"
-          }
-        }
       }
     ]
   })
