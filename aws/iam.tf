@@ -171,7 +171,7 @@ resource "aws_iam_policy" "snowpipe_s3_policy" {
         "Effect" : "Allow",
         "Action" : [
           "s3:GetObject",
-          "s3.GetObjectVersion",
+          "s3:GetObjectVersion",
         ],
         "Resource" : [
           "${aws_s3_bucket.bucket.arn}/processed/*",
@@ -181,7 +181,7 @@ resource "aws_iam_policy" "snowpipe_s3_policy" {
         "Effect" : "Allow",
         "Action" : [
           "s3:ListBucket",
-          "s3.GetBucketLocation",
+          "s3:GetBucketLocation",
         ],
         "Resource" : [
           "${aws_s3_bucket.bucket.arn}",
