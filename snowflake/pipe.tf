@@ -29,14 +29,14 @@ resource "snowflake_pipe" "my_pipe" {
 }
 
 resource "snowflake_storage_integration" "my_s3_integration" {
-  name = "MY_S3_INTEGRATION"
-  type = "EXTERNAL_STAGE"
+  name             = "MY_S3_INTEGRATION"
+  type             = "EXTERNAL_STAGE"
   storage_provider = "S3"
-  enabled = true
+  enabled          = true
 
-  storage_aws_iam_user_arn = data.terraform_remote_state.aws.outputs.snowpipe_role_arn
+  storage_aws_iam_user_arn  = data.terraform_remote_state.aws.outputs.snowpipe_role_arn
   storage_allowed_locations = ["s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/"]
-  storage_blocked_locations = ["s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/raw/"]  
+  storage_blocked_locations = ["s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/raw/"]
 }
 
 resource "snowflake_execute" "my_s3_integration" {
