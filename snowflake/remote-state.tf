@@ -15,7 +15,3 @@ output "s3_bucket_name" {
 output "snowpipe_role_arn" {
   value = data.terraform_remote_state.aws.outputs.snowpipe_role_arn
 }
-
-output "snowpipe_external_id" {
-  value = data.terraform_remote_state.aws.outputs.snowpipe_external_id
-}
