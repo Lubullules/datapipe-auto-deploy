@@ -14,6 +14,10 @@ output "snowpipe_external_id" {
   value = random_string.snowpipe_external_id.result
 }
 
+output "sns_topic_arn" {
+  value = aws_sns_topic.snowpipe_topic.arn
+}
+
 # output s3_bucket_arn {
 #   value       = aws_s3_bucket.bucket.arn
 # }
