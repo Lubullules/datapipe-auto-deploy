@@ -160,13 +160,28 @@ resource "aws_iam_policy" "snowpipe_s3_policy" {
         "Effect" : "Allow",
         "Action" : [
           "s3:GetObject",
-          "s3:PutObject",
-          "s3:ListBucket"
+          "s3:GetObjectVersion",
+        ],
+        "Resource" : [
+          "${aws_s3_bucket.bucket.arn}/processed/*",
+        ]
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:ListBucket",
+          "s3:GetBucketLocation",
         ],
         "Resource" : [
           "${aws_s3_bucket.bucket.arn}",
-          "${aws_s3_bucket.bucket.arn}/*"
-        ]
+        ],
+        "Condition" : {
+          "StringLike" : {
+            "s3:prefix" : [
+              "processed/*"
+            ]
+          }
+        }
       }
     ]
   })
