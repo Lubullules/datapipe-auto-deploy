@@ -38,7 +38,7 @@ resource "aws_s3_bucket_notification" "snowpipe_s3_notification" {
   bucket = aws_s3_bucket.bucket.id
 
   topic {
-    topic_arn     = aws_sns_topic.snowpipe_sns_topic.arn
+    topic_arn     = aws_sns_topic.snowpipe_topic.arn
     events        = ["s3:ObjectCreated:*"]
     filter_prefix = "processed/"
   }
