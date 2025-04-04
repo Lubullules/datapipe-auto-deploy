@@ -203,3 +203,24 @@ resource "aws_iam_role_policy_attachment" "snowpipe_policy_attachment" {
   role       = aws_iam_role.iam_snowpipe_role.name
   policy_arn = aws_iam_policy.snowpipe_s3_policy.arn
 }
+
+resource "aws_sqs_queue_policy" "sqs_policy" {
+  queue_url = aws_sqs_queue.snowpipe_queue.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "SQS:SendMessage"
+        Resource  = aws_sqs_queue.snowpipe_queue.arn
+        Condition = {
+          ArnEquals = {
+            "aws:SourceArn" = aws_s3_bucket.bucket.arn
+          }
+        }
+      }
+    ]
+  })
+}
