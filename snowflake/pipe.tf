@@ -14,6 +14,7 @@ resource "snowflake_file_format" "parquet_file_format" {
   database    = snowflake_database.my_database.name
   schema      = snowflake_schema.my_schema.name
   format_type = "PARQUET"
+  compression = "SNAPPY"
 
   depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
 }
