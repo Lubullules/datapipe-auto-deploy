@@ -37,13 +37,10 @@ resource "snowflake_storage_integration" "my_s3_integration" {
 
   storage_aws_role_arn      = data.terraform_remote_state.aws.outputs.snowpipe_role_arn
   storage_allowed_locations = ["s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/processed/"]
-<<<<<<< HEAD
-=======
   storage_blocked_locations = ["s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/raw/"]
 }
 
 resource "snowflake_execute" "my_s3_integration_update" {
   execute = "ALTER STORAGE INTEGRATION ${snowflake_storage_integration.my_s3_integration.name} SET STORAGE_AWS_EXTERNAL_ID = '${data.terraform_remote_state.aws.outputs.snowpipe_external_id}'"
   revert  = "ALTER STORAGE INTEGRATION ${snowflake_storage_integration.my_s3_integration.name} UNSET STORAGE_AWS_EXTERNAL_ID"
->>>>>>> snowpipe-external-id
 }
