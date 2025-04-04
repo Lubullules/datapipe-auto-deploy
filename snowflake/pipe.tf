@@ -25,7 +25,7 @@ resource "snowflake_pipe" "my_pipe" {
   schema         = snowflake_schema.my_schema.name
   copy_statement = "COPY INTO ${snowflake_table.my_table.fully_qualified_name} FROM @${snowflake_stage.my_stage.fully_qualified_name} FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = 'CASE_INSENSITIVE'"
   auto_ingest    = true
-  notification_channel = data.terraform_remote_state.aws.outputs.snowpipe_queue_arn
+  aws_sns_topic_arn = data.terraform_remote_state.aws.outputs.sns_topic_arn
 
   depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
 }
