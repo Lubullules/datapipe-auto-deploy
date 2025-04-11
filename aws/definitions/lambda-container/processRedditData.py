@@ -2,6 +2,7 @@ import os
 import pandas
 import awswrangler as wr
 import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
 BUCKET_NAME = "project-data-finance-dev-eu-west-1"
@@ -36,8 +37,9 @@ def dataframe_cleanup(df):
 def sentiment_analysis_and_counting_process(reddit_df, coinlore_df):
 
     # Initialize the Sentiment Intensity Analyzer
-    nltk.download('vader_lexicon')
-    sia = nltk.sentiment.vader.SentimentIntensityAnalyzer()
+    nltk.download('vader_lexicon', "/tmp/nltk_data")
+    nltk.data.path.append("/tmp/nltk_data")
+    sia = SentimentIntensityAnalyzer()
 
     processed_df = coinlore_df[['id', 'name', 'nameid', 'wf_timestamp']]
 
@@ -87,7 +89,7 @@ def lambda_handler(event, context):
 
         # Read the CoinLore data from the partition
         coinlore_df = wr.s3.read_parquet(
-            path=f's3://{BUCKET_NAME}/processed/wf_timestamp={timestamp}',
+            path=f's3://{BUCKET_NAME}/processed/wf_timestamp_partition={timestamp}',
             dataset=True,
         )
 
