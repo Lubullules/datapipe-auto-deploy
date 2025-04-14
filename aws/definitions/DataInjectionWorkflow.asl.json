@@ -4,43 +4,111 @@
   "States": {
     "Set Variables": {
       "Type": "Pass",
-      "Next": "Get Data From API",
+      "Next": "Parallel",
       "Assign": {
         "wf_timestamp": "{% $now() %}"
       }
     },
-    "Get Data From API": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::lambda:invoke",
-      "Output": "{% $states.result.Payload %}",
-      "Arguments": {
-        "FunctionName": "${get_data_from_api_arn}",
-        "Payload": {
-          "wf_timestamp": "{% $wf_timestamp %}"
-        }
-      },
-      "Retry": [
+    "Parallel": {
+      "Type": "Parallel",
+      "Next": "Process Reddit Data",
+      "Branches": [
         {
-          "ErrorEquals": [
-            "Lambda.ServiceException",
-            "Lambda.AWSLambdaException",
-            "Lambda.SdkClientException",
-            "Lambda.TooManyRequestsException"
-          ],
-          "IntervalSeconds": 1,
-          "MaxAttempts": 3,
-          "BackoffRate": 2,
-          "JitterStrategy": "FULL"
+          "StartAt": "Get Data From API",
+          "States": {
+            "Get Data From API": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Output": "{% $states.result.Payload %}",
+              "Arguments": {
+                "FunctionName": "${get_data_from_api_arn}",
+                "Payload": {
+                  "wf_timestamp": "{% $wf_timestamp %}"
+                }
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2,
+                  "JitterStrategy": "FULL"
+                }
+              ],
+              "Next": "Process Data"
+            },
+            "Process Data": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Output": "{% $states.result.Payload %}",
+              "Arguments": {
+                "FunctionName": "${process_data_arn}",
+                "Payload": {
+                  "wf_timestamp": "{% $wf_timestamp %}"
+                }
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2,
+                  "JitterStrategy": "FULL"
+                }
+              ],
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Get Data From Reddit API",
+          "States": {
+            "Get Data From Reddit API": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Output": "{% $states.result.Payload %}",
+              "Arguments": {
+                "FunctionName": "${get_data_from_reddit_api_arn}",
+                "Payload": {
+                  "wf_timestamp": "{% $wf_timestamp %}"
+                }
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2,
+                  "JitterStrategy": "FULL"
+                }
+              ],
+              "End": true
+            }
+          }
         }
-      ],
-      "Next": "Process Data"
+      ]
     },
-    "Process Data": {
+    "Process Reddit Data": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
-        "FunctionName": "${process_data_arn}",
+        "FunctionName": "${process_reddit_data_arn}",
         "Payload": {
           "wf_timestamp": "{% $wf_timestamp %}"
         }
