@@ -89,7 +89,7 @@ def lambda_handler(event, context):
 
         # Read the CoinLore data from the partition
         coinlore_df = wr.s3.read_parquet(
-            path=f's3://{BUCKET_NAME}/processed/wf_timestamp_partition={timestamp}',
+            path=f's3://{BUCKET_NAME}/coinlore/processed/wf_timestamp_partition={timestamp}',
             dataset=True,
         )
 

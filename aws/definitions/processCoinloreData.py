@@ -15,7 +15,7 @@ def lambda_handler(event, context):
 
         # Read the data from the partition
         df = wr.s3.read_parquet(
-            path=f's3://{BUCKET_NAME}/raw/wf_timestamp={timestamp}',
+            path=f's3://{BUCKET_NAME}/coinlore/raw/wf_timestamp={timestamp}',
             dataset=True,
         )
 
@@ -33,7 +33,7 @@ def lambda_handler(event, context):
         # Write the data to the partition
         wr.s3.to_parquet(
             df=df,
-            path=f's3://{BUCKET_NAME}/processed/',
+            path=f's3://{BUCKET_NAME}/coinlore/processed/',
             dataset=True,
             partition_cols=['wf_timestamp_partition'],
             mode='append',

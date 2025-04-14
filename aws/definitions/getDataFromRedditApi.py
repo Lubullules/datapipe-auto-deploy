@@ -10,7 +10,6 @@ from datetime import datetime
 
 # Config S3
 BUCKET_NAME = os.getenv("BUCKET_NAME")
-BASE_PATH = "raw/"  # Path on S3
 
 # Variables d'environnement pour Reddit
 reddit_username = os.getenv("reddit_username")
@@ -83,15 +82,15 @@ def lambda_handler(event, context):
 
         # ----- Étape 4 : Génération du nom de fichier avec timestamp -----
         timestamp = event.get("wf_timestamp")
-        df["wf_timestamp"] = timestamp 
+        df["wf_timestamp"] = timestamp
 
         # ----- Étape 5 : Sauvegarde dans S3 -----
-        wr.s3.to_parquet(df=df, path=f"s3://{BUCKET_NAME}/{BASE_PATH}", dataset=True, partition_cols=["wf_timestamp"], index=False)
+        wr.s3.to_parquet(df=df, path=f"s3://{BUCKET_NAME}/reddit/raw/", dataset=True, partition_cols=["wf_timestamp"], index=False)
 
 
         return {
             'statusCode': 200,
-            'body': json.dumps(f"Data successfully uploaded to s3://{BUCKET_NAME}/{BASE_PATH}")
+            'body': json.dumps(f"Data successfully uploaded to s3://{BUCKET_NAME}/reddit/raw")
         }
 
     except Exception as e:
