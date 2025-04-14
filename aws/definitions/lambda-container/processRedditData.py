@@ -5,7 +5,7 @@ import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
-BUCKET_NAME = "project-data-finance-dev-eu-west-1"
+BUCKET_NAME = os.getenv('BUCKET_NAME')
 
 def dataframe_cleanup(df):
 
