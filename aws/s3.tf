@@ -11,5 +11,5 @@ resource "aws_s3_bucket_logging" "data_bucket" {
 
   #TODO: var the base bucket name
   target_bucket = "aws-s3-base-bucket-project-test"
-  target_prefix = "data_logs/"
+  target_prefix = "${aws_s3_bucket.bucket.id}_logs/"
 }
