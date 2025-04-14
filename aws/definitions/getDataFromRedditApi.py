@@ -13,11 +13,11 @@ BUCKET_NAME = os.getenv("BUCKET_NAME")
 BASE_PATH = "raw/"  # Path on S3
 
 # Variables d'environnement pour Reddit
-reddit_username = os.getenv("REDDIT_USERNAME")
-reddit_password = os.getenv("REDDIT_PASSWORD")
-user_agent = os.getenv("USER_AGENT")
-client_id = os.getenv("CLIENT_ID")
-client_secret = os.getenv("CLIENT_SECRET")
+reddit_username = os.getenv("reddit_username")
+reddit_password = os.getenv("reddit_password")
+user_agent = os.getenv("user_agent")
+client_id = os.getenv("client_id")
+client_secret = os.getenv("client_secret")
 
 def safe_convert(value):
     if isinstance(value, (dict, list, tuple)) or isinstance(value, np.ndarray):
@@ -47,14 +47,18 @@ def lambda_handler(event, context):
         }
 
         http = urllib3.PoolManager()
-        encoded_auth_data = urlencode(auth_payload)
 
+        encoded_auth_data = urlencode(auth_payload)
         auth_response = http.request(
             "POST",
             auth_url,
             body=encoded_auth_data,
             headers=auth_headers
         )
+
+        if auth_response.status != 200:
+            raise ValueError(f"Failed to authenticate. Status code: {auth_response.status}, response: {auth_response.data}")
+
 
         auth_data = json.loads(auth_response.data.decode("utf-8"))
         access_token = auth_data.get("access_token")
@@ -65,6 +69,7 @@ def lambda_handler(event, context):
             "authorization": f"bearer {access_token}",
             "user-agent": user_agent
         }
+
 
         api_response = http.request("GET", api_url, headers=api_headers)
         data = json.loads(api_response.data.decode("utf-8"))
@@ -79,14 +84,14 @@ def lambda_handler(event, context):
         # ----- Étape 4 : Génération du nom de fichier avec timestamp -----
         timestamp = event.get("wf_timestamp")
         df["wf_timestamp"] = timestamp 
-        s3_key = f"{BASE_PATH}reddit_data_{timestamp}.parquet"
 
         # ----- Étape 5 : Sauvegarde dans S3 -----
         wr.s3.to_parquet(df=df, path=f"s3://{BUCKET_NAME}/{BASE_PATH}", dataset=True, partition_cols=["wf_timestamp"], index=False)
 
+
         return {
             'statusCode': 200,
-            'body': json.dumps(f"Data successfully uploaded to s3://{BUCKET_NAME}/{s3_key}")
+            'body': json.dumps(f"Data successfully uploaded to s3://{BUCKET_NAME}/{BASE_PATH}")
         }
 
     except Exception as e:
