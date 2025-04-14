@@ -90,4 +90,6 @@ resource "aws_lambda_function" "lambda_processRedditData_resource" {
       BUCKET_NAME = aws_s3_bucket.bucket.bucket
     }
   }
+
+  depends_on = [null_resource.build_and_push_docker_image]
 }
