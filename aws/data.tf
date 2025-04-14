@@ -5,7 +5,7 @@ data "archive_file" "lambda_getDataFromCoinloreApi_data" {
   output_path = "${path.module}/definitions/getDataFromCoinloreApi.zip"
 }
 
-data "archive_file" "lambda_processData_data" {
+data "archive_file" "lambda_processCoinloreData_data" {
   type        = "zip"
   source_file = "${path.module}/definitions/processCoinloreData.py" # Assurez-vous que le code source est dans ce dossier
   output_path = "${path.module}/definitions/processCoinloreData.zip"
