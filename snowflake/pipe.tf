@@ -1,3 +1,4 @@
+#TODO: duplicate stage and pipe for Reddit Data
 resource "snowflake_stage" "my_stage" {
   name                = "MY_STAGE"
   database            = snowflake_database.my_database.name

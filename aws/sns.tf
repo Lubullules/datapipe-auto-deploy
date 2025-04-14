@@ -1,3 +1,4 @@
+#TODO: Change the names and variables to match Coinlore
 resource "aws_sns_topic" "snowpipe_topic" {
   name = "${var.project_name}-snowpipe-topic"
   policy = jsonencode({
@@ -43,3 +44,5 @@ resource "aws_s3_bucket_notification" "snowpipe_s3_notification" {
     filter_prefix = "processed/"
   }
 }
+
+#TODO: Add SNS topic and notification for Reddit data
