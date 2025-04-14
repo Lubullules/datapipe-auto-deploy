@@ -65,11 +65,11 @@ resource "aws_lambda_function" "lambda_getDataFromRedditApi_resource" {
     variables = {
       BUCKET_NAME = aws_s3_bucket.bucket.bucket
 
-      reddit_username = "BusinessAd4873"
-      reddit_password = "magodassearthur123"
-      user_agent = "CryptoPostsTest (by /u/BusinessAd4873)"
-      client_id = "ECL9oz9sGlFbawRB95ZcrA"
-      client_secret = "DPGGI-B9u-MAbJX_HDG_rtxTfHaLLQ"
+      reddit_username = var.reddit_username
+      reddit_password = var.reddit_password
+      user_agent = var.user_agent
+      client_id = var.client_id
+      client_secret = var.client_secret
     }
   }
 }
