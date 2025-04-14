@@ -1,3 +1,3 @@
 resource "aws_ecr_repository" "lambda_repo" {
-  name = "your-repo-name"
+  name = "${var.project_name}-${var.env}-lambda-container-image"
 }
