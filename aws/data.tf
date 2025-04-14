@@ -1,14 +1,14 @@
 #Resource importation for AWS Lambda s3DataUpload, cleanTransformData and getDataFromApi
-data "archive_file" "lambda_getDataFromApi_data" {
+data "archive_file" "lambda_getDataFromCoinloreApi_data" {
   type        = "zip"
-  source_file = "${path.module}/definitions/getDataFromApi.py" # Assurez-vous que le code source est dans ce dossier
-  output_path = "${path.module}/definitions/getDataFromApi.zip"
+  source_file = "${path.module}/definitions/getDataFromCoinloreApi.py" # Assurez-vous que le code source est dans ce dossier
+  output_path = "${path.module}/definitions/getDataFromCoinloreApi.zip"
 }
 
 data "archive_file" "lambda_processData_data" {
   type        = "zip"
-  source_file = "${path.module}/definitions/processData.py" # Assurez-vous que le code source est dans ce dossier
-  output_path = "${path.module}/definitions/processData.zip"
+  source_file = "${path.module}/definitions/processCoinloreData.py" # Assurez-vous que le code source est dans ce dossier
+  output_path = "${path.module}/definitions/processCoinloreData.zip"
 }
 
 data "archive_file" "lambda_getDataFromRedditApi_data" {

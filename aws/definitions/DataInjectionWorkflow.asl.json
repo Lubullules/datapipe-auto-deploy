@@ -21,7 +21,7 @@
               "Resource": "arn:aws:states:::lambda:invoke",
               "Output": "{% $states.result.Payload %}",
               "Arguments": {
-                "FunctionName": "${get_data_from_api_arn}",
+                "FunctionName": "${get_data_from_coinlore_api_arn}",
                 "Payload": {
                   "wf_timestamp": "{% $wf_timestamp %}"
                 }
@@ -47,7 +47,7 @@
               "Resource": "arn:aws:states:::lambda:invoke",
               "Output": "{% $states.result.Payload %}",
               "Arguments": {
-                "FunctionName": "${process_data_arn}",
+                "FunctionName": "${process_coinlore_data_arn}",
                 "Payload": {
                   "wf_timestamp": "{% $wf_timestamp %}"
                 }
