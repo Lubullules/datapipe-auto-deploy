@@ -63,6 +63,8 @@ resource "aws_iam_policy" "step_functions_policy" {
         "Resource" : [
           "${aws_lambda_function.lambda_getDataFromApi_resource.arn}",
           "${aws_lambda_function.lambda_processData_resource.arn}",
+          "${aws_lambda_function.lambda_getDataFromRedditApi_resource.arn}",
+          "${aws_lambda_function.lambda_processRedditData_resource.arn}:*"
         ]
       }
     ]
