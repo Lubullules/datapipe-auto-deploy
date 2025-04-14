@@ -81,7 +81,6 @@ resource "aws_lambda_function" "lambda_processRedditData_resource" {
   package_type  = "Image"
   function_name = "${var.project_name}-${var.env}-processRedditData"
   role          = aws_iam_role.iam_lambda_role.arn
-  handler       = "processRedditData.lambda_handler"
   timeout       = 60
   memory_size   = 512
 
