@@ -77,7 +77,7 @@ resource "aws_lambda_function" "lambda_getDataFromRedditApi_resource" {
 resource "aws_lambda_function" "lambda_processRedditData_resource" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
-  image_uri     = "${aws_ecr_repository.reddit_data_repo.repository_url}:latest"
+  image_uri     = "${aws_ecr_repository.lambda_repo.repository_url}:latest"
   package_type  = "Image"
   function_name = "${var.project_name}-${var.env}-processRedditData"
   role          = aws_iam_role.iam_lambda_role.arn
