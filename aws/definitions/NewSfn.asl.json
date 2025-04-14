@@ -1,0 +1,134 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "Set Variables",
+  "States": {
+    "Set Variables": {
+      "Type": "Pass",
+      "Next": "Parallel",
+      "Assign": {
+        "wf_timestamp": "{% $now() %}"
+      }
+    },
+    "Parallel": {
+      "Type": "Parallel",
+      "Next": "Process Reddit Data",
+      "Branches": [
+        {
+          "StartAt": "Get Data From API",
+          "States": {
+            "Get Data From API": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Output": "{% $states.result.Payload %}",
+              "Arguments": {
+                "FunctionName": "arn:aws:lambda:eu-west-1:257394462879:function:project-data-finance-dev-getDataFromApi",
+                "Payload": {
+                  "wf_timestamp": "{% $wf_timestamp %}"
+                }
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2,
+                  "JitterStrategy": "FULL"
+                }
+              ],
+              "Next": "Process Data"
+            },
+            "Process Data": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Output": "{% $states.result.Payload %}",
+              "Arguments": {
+                "FunctionName": "arn:aws:lambda:eu-west-1:257394462879:function:project-data-finance-dev-processData",
+                "Payload": {
+                  "wf_timestamp": "{% $wf_timestamp %}"
+                }
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2,
+                  "JitterStrategy": "FULL"
+                }
+              ],
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Get Data From Reddit API",
+          "States": {
+            "Get Data From Reddit API": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Output": "{% $states.result.Payload %}",
+              "Arguments": {
+                "FunctionName": "arn:aws:lambda:eu-west-1:257394462879:function:test-praw:$LATEST",
+                "Payload": {
+                  "wf_timestamp": "{% $wf_timestamp %}"
+                }
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2,
+                  "JitterStrategy": "FULL"
+                }
+              ],
+              "End": true
+            }
+          }
+        }
+      ]
+    },
+    "Process Reddit Data": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:eu-west-1:257394462879:function:test-container:$LATEST",
+        "Payload": {
+          "wf_timestamp": "{% $wf_timestamp %}"
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "End": true
+    }
+  },
+  "QueryLanguage": "JSONata"
+}
