@@ -29,7 +29,7 @@ variable "reddit_password" {
   type        = string
   description = "Mot de passe Reddit"
   default     = "magodassearthur123"
-  sensitive = true
+  sensitive   = true
 }
 
 variable "user_agent" {
