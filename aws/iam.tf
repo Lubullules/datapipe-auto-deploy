@@ -176,7 +176,8 @@ resource "aws_iam_policy" "snowpipe_s3_policy" {
           "s3:GetObjectVersion",
         ],
         "Resource" : [
-          "${aws_s3_bucket.bucket.arn}/processed/*",
+          "${aws_s3_bucket.bucket.arn}/coinlore/processed/*",
+          "${aws_s3_bucket.bucket.arn}/reddit/processed/*",
         ]
       },
       {
@@ -191,7 +192,8 @@ resource "aws_iam_policy" "snowpipe_s3_policy" {
         "Condition" : {
           "StringLike" : {
             "s3:prefix" : [
-              "processed/*"
+              "coinlore/processed/*",
+              "reddit/processed/*"
             ]
           }
         }
