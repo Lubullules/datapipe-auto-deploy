@@ -15,8 +15,8 @@ resource "snowflake_schema" "my_schema" {
   depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
 }
 
-resource "snowflake_table" "my_table" {
-  name     = "MY_TABLE"
+resource "snowflake_table" "coinlore" {
+  name     = "COINLORE_TABLE"
   database = snowflake_database.my_database.name
   schema   = snowflake_schema.my_schema.name
 
@@ -94,6 +94,44 @@ resource "snowflake_table" "my_table" {
 
   column {
     name = "msupply"
+    type = "FLOAT"
+  }
+
+  column {
+    name = "wf_timestamp"
+    type = "TIMESTAMP_TZ"
+  }
+}
+
+resource "snowflake_table" "reddit" {
+  name     = "REDDIT_TABLE"
+  database = snowflake_database.my_database.name
+  schema   = snowflake_schema.my_schema.name
+
+  depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
+
+  column {
+    name = "id"
+    type = "STRING"
+  }
+
+  column {
+    name = "name"
+    type = "STRING"
+  }
+
+  column {
+    name = "nameid"
+    type = "STRING"
+  }
+
+  column {
+    name = "count"
+    type = "INTEGER"
+  }
+
+  column {
+    name = "average_sentiment"
     type = "FLOAT"
   }
 
