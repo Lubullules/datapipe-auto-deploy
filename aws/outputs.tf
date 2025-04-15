@@ -14,8 +14,12 @@ output "snowpipe_external_id" {
   value = random_string.snowpipe_external_id.result
 }
 
-output "sns_topic_arn" {
-  value = aws_sns_topic.snowpipe_topic.arn
+output "coinlore_sns_topic_arn" {
+  value = aws_sns_topic.coinlore_snowpipe.arn
+}
+
+output "reddit_sns_topic_arn" {
+  value = aws_sns_topic.reddit_snowpipe.arn
 }
 
 # output s3_bucket_arn {
