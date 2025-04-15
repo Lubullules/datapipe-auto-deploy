@@ -1,5 +1,6 @@
 -- Creating user
 CREATE OR REPLACE USER "tf-snow-user";
+ALTER USER "tf-snow-user" SET RSA_PUBLIC_KEY='PUT_YOUR_PUBLIC_KEY_HERE';
 -- Creating role
 CREATE OR ALTER ROLE "TF-SNOW-ROLE";
 -- Granting account privileges to the role
