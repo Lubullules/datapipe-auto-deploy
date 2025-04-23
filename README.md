@@ -112,3 +112,10 @@ SELECT SYSTEM$PIPE_STATUS('<MY_DATABASE.MY_SCHEMA.MY_PIPE>');
 
 
   ---------------------------------------------------------------
+
+# Personal reflections
+
+## Problems with Interfacing AWS and Snowflake
+ AWS puts a timer of 72h when deleting a topic and thus the name of the topic is not available for 72h. This is a problem when you want to delete and recreate the topic with the same name when making deployment tests -> fixed by using prefixes in the topic name.
+ Terraform does not allow to create two different notification events for the same bucket. You have to add each event in the same TF object.
+ There is a collision when multiple Snowpipes are subscribed to the same topic since Snowflake uses a single SQS queue for all Snowpipes. This is a problem when you want to use the same topic for multiple Snowpipes. -> fixed by using different topics for each Snowpipe.
