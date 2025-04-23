@@ -150,7 +150,7 @@ resource "aws_iam_role" "iam_snowpipe_role" {
       {
         Effect = "Allow",
         Principal = {
-          AWS = "arn:aws:iam::296062579650:user/jqyv0000-s"
+          AWS = "${var.snowflake_aws_user_arn}"
         },
         Action = "sts:AssumeRole",
         Condition = {

@@ -22,7 +22,7 @@ variable "env" {
 variable "snowflake_aws_user_arn" {
   type        = string
   description = "ARN of the AWS user dedicated by Snowflake"
-  default     = "arn:aws:iam::296062579650:user/jqyv0000-s"
+  default     = "arn:aws:iam::296062579650:user/wsfx0000-s"
 }
 
 variable "reddit_username" {

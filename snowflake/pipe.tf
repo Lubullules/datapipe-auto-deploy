@@ -42,7 +42,7 @@ resource "snowflake_pipe" "coinlore_data" {
   schema            = snowflake_schema.my_schema.name
   copy_statement    = "COPY INTO ${snowflake_table.coinlore.fully_qualified_name} FROM @${snowflake_stage.coinlore_data.fully_qualified_name} FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = 'CASE_INSENSITIVE'"
   auto_ingest       = true
-  aws_sns_topic_arn = data.terraform_remote_state.aws.outputs.sns_topic_arn
+  aws_sns_topic_arn = data.terraform_remote_state.aws.outputs.sns_coinlore_topic_arn
 
   depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
 }
@@ -66,7 +66,7 @@ resource "snowflake_pipe" "reddit_data" {
   schema            = snowflake_schema.my_schema.name
   copy_statement    = "COPY INTO ${snowflake_table.reddit.fully_qualified_name} FROM @${snowflake_stage.reddit_data.fully_qualified_name} FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = 'CASE_INSENSITIVE'"
   auto_ingest       = true
-  aws_sns_topic_arn = data.terraform_remote_state.aws.outputs.sns_topic_arn
+  aws_sns_topic_arn = data.terraform_remote_state.aws.outputs.sns_reddit_topic_arn
 
   depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
 }

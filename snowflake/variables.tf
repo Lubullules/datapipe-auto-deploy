@@ -20,12 +20,12 @@ variable "aws_key" {
 
 variable "snowflake_org_name" {
   type    = string
-  default = "JLWJSHF"
+  default = "EBSEQRI"
 }
 
 variable "snowflake_account_name" {
   type    = string
-  default = "BJ18758"
+  default = "MN81083"
 }
 
 variable "snowflake_user" {
