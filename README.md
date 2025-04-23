@@ -92,3 +92,23 @@
   - **Logs**: CloudWatch for Step Functions and Lambda
   - **Alerts**: AWS SNS for failure notifications
   - **Snowpipe tracking**: File ingestion verification
+
+  ---------------------------------------------------------------
+
+# Troubleshooting
+
+**Topic subription issue:** If you encounter the topic subription issue, please note that Snowpipe stops loading files after Amazon SNS topic subscription is deleted. To resolve this, you need to re-create the subscription with another name and re-run the Snowpipe. This is a known issue with Snowpipe and SNS integration. 
+
+  ##### Useful links:
+  - https://docs.snowflake.com/en/user-guide/data-load-snowpipe-ts
+  - https://repost.aws/knowledge-center/sns-cross-account-subscription
+
+**Snowpipe debugging :** If you encounter issues with Snowpipe, you can use the following SQL command to check the status of your Snowpipe and identify any errors that may have occurred during the loading process:
+```sql
+SELECT SYSTEM$PIPE_STATUS('<MY_DATABASE.MY_SCHEMA.MY_PIPE>');
+```
+- This command will provide you with information about the status of your Snowpipe, including any errors that may have occurred during the loading process. You can use this information to troubleshoot and resolve any issues you may be experiencing.
+- For more information on Snowpipe debugging, you can refer to the official Snowflake documentation: [Snowpipe Debugging](https://docs.snowflake.com/fr/user-guide/data-load-snowpipe-ts#step-1-check-the-pipe-status).
+
+
+  ---------------------------------------------------------------
