@@ -1,6 +1,6 @@
 *.terraform
 *.terraform.lock.hcl
 planfile
-cryptoposts.json
 *.ipynb
 snowflake*key*
+*.zip

@@ -16,20 +16,26 @@ export TF_VAR_env=$ENV
 echo -e "\n\n\n"
 
 #------------------------------------------------------------
+
 # AWS
-echo "Destroying AWS infrastructure from $AWS_INFRASTRUCTURE_PATH"
+echo "Deploying AWS infrastructure from $AWS_INFRASTRUCTURE_PATH"
 cd $AWS_INFRASTRUCTURE_PATH
 
-terraform destroy
+terraform fmt --recursive
+terraform init  -backend-config="region=$AWS_REGION" -backend-config="bucket=$TF_STATES_BASE_BUCKET_NAME" -backend-config="key=$AWS_TF_STATE_BASE_BUCKET_KEY"
+terraform apply
 
 echo -e "\n\n\n"
 
 #------------------------------------------------------------
 # Snowflake
-echo "Destroying Snowflake infrastructure from $SNOWFLAKE_INFRASTRUCTURE_PATH"
+
+echo "Deploying Snowflake infrastructure from $SNOWFLAKE_INFRASTRUCTURE_PATH"
 cd $SNOWFLAKE_INFRASTRUCTURE_PATH
 
 export TF_VAR_aws_key="$AWS_TF_STATE_BASE_BUCKET_KEY"
 export TF_VAR_snowflake_private_key="$SNOWFLAKE_PRIVATE_KEY"
 
-terraform destroy
+terraform fmt --recursive
+terraform init -backend-config="region=$AWS_REGION" -backend-config="bucket=$TF_STATES_BASE_BUCKET_NAME" -backend-config="key=$SNOWFLAKE_TF_STATE_BASE_BUCKET_KEY"
+terraform apply
