@@ -1,13 +1,9 @@
-output "project_name" {
-  value = var.project_name
-}
-
 output "s3_bucket_name" {
-  value = aws_s3_bucket.bucket.id
+  value = aws_s3_bucket.data_bucket.id
 }
 
 output "snowpipe_role_arn" {
-  value = aws_iam_role.iam_snowpipe_role.arn
+  value = aws_iam_role.snowpipe.arn
 }
 
 output "snowpipe_external_id" {
@@ -15,14 +11,9 @@ output "snowpipe_external_id" {
 }
 
 output "sns_coinlore_topic_arn" {
-  value = aws_sns_topic.snowpipe-coinlore.arn
+  value = aws_sns_topic.snowpipe_coinlore.arn
 }
 
 output "sns_reddit_topic_arn" {
-  value = aws_sns_topic.snowpipe-reddit.arn
+  value = aws_sns_topic.snowpipe_reddit.arn
 }
-
-
-# output s3_bucket_arn {
-#   value       = aws_s3_bucket.bucket.arn
-# }

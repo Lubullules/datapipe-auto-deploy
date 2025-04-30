@@ -4,3 +4,4 @@ planfile
 *.ipynb
 snowflake*key*
 *.zip
+*.csv

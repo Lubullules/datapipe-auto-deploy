@@ -29,18 +29,18 @@ def save_to_s3(data, timestamp):
     df = pd.DataFrame(data)  # Convert in pandas DataFrame
     
     # Add the timestamp column
-    df["wf_timestamp"] = timestamp
+    df["pipeline_timestamp"] = timestamp
 
     # Name of the file and path
     s3_path = f"s3://{BUCKET_NAME}/coinlore/raw/"
 
     # Save the data to S3
-    wr.s3.to_parquet(df=df, path=s3_path, dataset=True, partition_cols=["wf_timestamp"], index=False)
+    wr.s3.to_parquet(df=df, path=s3_path, dataset=True, partition_cols=["pipeline_timestamp"], index=False)
 
 def lambda_handler(event, context):
     try:
         # Get the timestamp
-        timestamp = event.get("wf_timestamp")
+        timestamp = event.get("pipeline_timestamp")
 
         crypto_data = fetch_crypto_data()
         save_to_s3(crypto_data, timestamp)

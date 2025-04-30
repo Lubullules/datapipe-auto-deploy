@@ -1,26 +1,26 @@
-resource "snowflake_warehouse" "my_warehouse" {
-  name           = "MY_WAREHOUSE"
+resource "snowflake_warehouse" "warehouse" {
+  name           = "${local.project_acronym_upper}_${local.env_capped}_WAREHOUSE"
   warehouse_size = "XSMALL"
   auto_suspend   = 60
   auto_resume    = true
 }
 
-resource "snowflake_database" "my_database" {
-  name = "MY_DATABASE"
+resource "snowflake_database" "database" {
+  name = "${local.project_acronym_upper}_${local.env_capped}_DATABASE"
 }
 
-resource "snowflake_schema" "my_schema" {
-  name       = "MY_SCHEMA"
-  database   = snowflake_database.my_database.name
-  depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
+resource "snowflake_schema" "schema" {
+  name       = "${local.project_acronym_upper}_${local.env_capped}_SCHEMA"
+  database   = snowflake_database.database.name
+  depends_on = [snowflake_grant_database_role.tf-snow-role]
 }
 
 resource "snowflake_table" "coinlore" {
-  name     = "COINLORE_TABLE"
-  database = snowflake_database.my_database.name
-  schema   = snowflake_schema.my_schema.name
+  name     = "${local.project_acronym_upper}_${local.env_capped}_COINLORE_TABLE"
+  database = snowflake_database.database.name
+  schema   = snowflake_schema.schema.name
 
-  depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
+  depends_on = [snowflake_grant_database_role.tf-snow-role]
 
   column {
     name = "id"
@@ -98,17 +98,17 @@ resource "snowflake_table" "coinlore" {
   }
 
   column {
-    name = "wf_timestamp"
+    name = "pipeline_timestamp"
     type = "TIMESTAMP_TZ"
   }
 }
 
 resource "snowflake_table" "reddit" {
-  name     = "REDDIT_TABLE"
-  database = snowflake_database.my_database.name
-  schema   = snowflake_schema.my_schema.name
+  name     = "${local.project_acronym_upper}_${local.env_capped}_REDDIT_TABLE"
+  database = snowflake_database.database.name
+  schema   = snowflake_schema.schema.name
 
-  depends_on = [snowflake_grant_database_role.tf-snow-role_grant]
+  depends_on = [snowflake_grant_database_role.tf-snow-role]
 
   column {
     name = "id"
@@ -136,7 +136,7 @@ resource "snowflake_table" "reddit" {
   }
 
   column {
-    name = "wf_timestamp"
+    name = "pipeline_timestamp"
     type = "TIMESTAMP_TZ"
   }
 }

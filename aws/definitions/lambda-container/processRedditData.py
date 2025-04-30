@@ -41,7 +41,7 @@ def sentiment_analysis_and_counting_process(reddit_df, coinlore_df):
     nltk.data.path.append("/tmp/nltk_data")
     sia = SentimentIntensityAnalyzer()
 
-    processed_df = coinlore_df[['id', 'name', 'nameid', 'wf_timestamp']]
+    processed_df = coinlore_df[['id', 'name', 'nameid', 'pipeline_timestamp']]
 
     # Put 'name', 'symbol' and 'name-id' to lowercase
     processed_df['name'] = processed_df['name'].str.lower()
@@ -76,20 +76,20 @@ def lambda_handler(event, context):
 
     try:
         # Get the POSIX timestamp from the event and format it
-        timestamp = event.get('wf_timestamp', None)
+        timestamp = event.get('pipeline_timestamp', None)
 
         if timestamp is None:
             raise ValueError('No timestamp provided')
 
         # Read the data from the partition
         reddit_df = wr.s3.read_parquet(
-            path=f's3://{BUCKET_NAME}/reddit/raw/wf_timestamp={timestamp}',
+            path=f's3://{BUCKET_NAME}/reddit/raw/pipeline_timestamp={timestamp}',
             dataset=True,
         )
 
         # Read the CoinLore data from the partition
         coinlore_df = wr.s3.read_parquet(
-            path=f's3://{BUCKET_NAME}/coinlore/processed/wf_timestamp_partition={timestamp}',
+            path=f's3://{BUCKET_NAME}/coinlore/processed/pipeline_timestamp_partition={timestamp}',
             dataset=True,
         )
 
@@ -97,15 +97,15 @@ def lambda_handler(event, context):
 
         processed_df = sentiment_analysis_and_counting_process(reddit_df, coinlore_df)
 
-        # Duplicate the 'wf_timestamp' column to keep after partitioning
-        processed_df['wf_timestamp_partition'] = processed_df['wf_timestamp'].astype(str)
+        # Duplicate the 'pipeline_timestamp' column to keep after partitioning
+        processed_df['pipeline_timestamp_partition'] = processed_df['pipeline_timestamp'].astype(str)
 
         # Write the data to the partition
         wr.s3.to_parquet(
             df=processed_df,
             path=f's3://{BUCKET_NAME}/reddit/processed/',
             dataset=True,
-            partition_cols=['wf_timestamp_partition'],
+            partition_cols=['pipeline_timestamp_partition'],
             mode='append',
             index=False
         )

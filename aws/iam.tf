@@ -1,6 +1,6 @@
 #Role for Step Function
-resource "aws_iam_role" "iam_sfn_role" {
-  name = "${var.project_name}-${var.env}-StepFunctionsRole"
+resource "aws_iam_role" "step_function" {
+  name = "${local.project_acronym_upper}${local.env_capped}StepFunctionRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -16,8 +16,8 @@ resource "aws_iam_role" "iam_sfn_role" {
 }
 
 #Role for Lambda
-resource "aws_iam_role" "iam_lambda_role" {
-  name = "${var.project_name}-${var.env}-LambdaRole"
+resource "aws_iam_role" "lambda" {
+  name = "${local.project_acronym_upper}${local.env_capped}LambdaRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -33,8 +33,8 @@ resource "aws_iam_role" "iam_lambda_role" {
 }
 
 #Role for CloudWatch Events
-resource "aws_iam_role" "iam_scheduler_role" {
-  name = "${var.project_name}-${var.env}-SchedulerRole"
+resource "aws_iam_role" "scheduler" {
+  name = "${local.project_acronym_upper}${local.env_capped}SchedulerRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -50,8 +50,8 @@ resource "aws_iam_role" "iam_scheduler_role" {
 }
 
 #Create policy for Step Function
-resource "aws_iam_policy" "step_functions_policy" {
-  name = "${var.project_name}-${var.env}-StepFunctionsInvokeLambdaPolicy"
+resource "aws_iam_policy" "step_function" {
+  name = "${local.project_acronym_upper}${local.env_capped}StepFunctionInvokeLambdaPolicy"
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -61,10 +61,10 @@ resource "aws_iam_policy" "step_functions_policy" {
           "lambda:InvokeFunction"
         ],
         "Resource" : [
-          "${aws_lambda_function.lambda_getDataFromCoinloreApi_resource.arn}",
-          "${aws_lambda_function.lambda_processCoinloreData_resource.arn}",
-          "${aws_lambda_function.lambda_getDataFromRedditApi_resource.arn}",
-          "${aws_lambda_function.lambda_processRedditData_resource.arn}"
+          "${aws_lambda_function.getDataFromCoinloreApi.arn}",
+          "${aws_lambda_function.processCoinloreData.arn}",
+          "${aws_lambda_function.getDataFromRedditApi.arn}",
+          "${aws_lambda_function.processRedditData.arn}"
         ]
       }
     ]
@@ -72,14 +72,14 @@ resource "aws_iam_policy" "step_functions_policy" {
 }
 
 #Attach policy for Step Function
-resource "aws_iam_role_policy_attachment" "sfn_policy_attachment" {
-  role       = aws_iam_role.iam_sfn_role.name
-  policy_arn = aws_iam_policy.step_functions_policy.arn
+resource "aws_iam_role_policy_attachment" "step_function" {
+  role       = aws_iam_role.step_function.name
+  policy_arn = aws_iam_policy.step_function.arn
 }
 
 #Create policy for Lambda
-resource "aws_iam_policy" "lambda_s3_policy" {
-  name = "${var.project_name}-${var.env}-LambdaReadWriteS3BucketPolicy"
+resource "aws_iam_policy" "lambda_s3" {
+  name = "${local.project_acronym_upper}${local.env_capped}LambdaReadWriteS3BucketPolicy"
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -93,8 +93,8 @@ resource "aws_iam_policy" "lambda_s3_policy" {
           "s3:PutObjectAcl"
         ],
         "Resource" : [
-          "${aws_s3_bucket.bucket.arn}",
-          "${aws_s3_bucket.bucket.arn}/*"
+          "${aws_s3_bucket.data_bucket.arn}",
+          "${aws_s3_bucket.data_bucket.arn}/*"
         ]
       }
     ]
@@ -102,19 +102,19 @@ resource "aws_iam_policy" "lambda_s3_policy" {
 }
 
 #Attach policies for Lambda
-resource "aws_iam_role_policy_attachment" "lambda_log_policy_attachment" {
-  role       = aws_iam_role.iam_lambda_role.name
+resource "aws_iam_role_policy_attachment" "lambda_log" {
+  role       = aws_iam_role.lambda.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_s3_policy_attachment" {
-  role       = aws_iam_role.iam_lambda_role.name
-  policy_arn = aws_iam_policy.lambda_s3_policy.arn
+resource "aws_iam_role_policy_attachment" "lambda_s3" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = aws_iam_policy.lambda_s3.arn
 }
 
 #Create policy for Scheduler
-resource "aws_iam_policy" "scheduler_sfn_policy" {
-  name = "${var.project_name}-${var.env}-SchedulerStartStepFunctionExecutionPolicy"
+resource "aws_iam_policy" "scheduler_sfn" {
+  name = "${local.project_acronym_upper}${local.env_capped}SchedulerStartStepFunctionExecutionPolicy"
   policy = jsonencode({
     "Version" = "2012-10-17",
     "Statement" = [
@@ -130,9 +130,9 @@ resource "aws_iam_policy" "scheduler_sfn_policy" {
 }
 
 #Attach policy for Scheduler
-resource "aws_iam_role_policy_attachment" "scheduler_policy_attachment" {
-  role       = aws_iam_role.iam_scheduler_role.name
-  policy_arn = aws_iam_policy.scheduler_sfn_policy.arn
+resource "aws_iam_role_policy_attachment" "schedule" {
+  role       = aws_iam_role.scheduler.name
+  policy_arn = aws_iam_policy.scheduler_sfn.arn
 }
 
 #Create a random external ID for the Snowpipe role
@@ -142,8 +142,8 @@ resource "random_string" "snowpipe_external_id" {
 }
 
 #Create role for Snowpipe
-resource "aws_iam_role" "iam_snowpipe_role" {
-  name = "${var.project_name}-${var.env}-SnowpipeRole"
+resource "aws_iam_role" "snowpipe" {
+  name = "${local.project_acronym_upper}${local.env_capped}SnowpipeRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -164,8 +164,8 @@ resource "aws_iam_role" "iam_snowpipe_role" {
 }
 
 #Create policy for Snowpipe
-resource "aws_iam_policy" "snowpipe_s3_policy" {
-  name = "${var.project_name}-${var.env}-SnowpipeS3Policy"
+resource "aws_iam_policy" "snowpipe_s3" {
+  name = "${local.project_acronym_upper}${local.env_capped}SnowpipeS3Policy"
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -176,8 +176,8 @@ resource "aws_iam_policy" "snowpipe_s3_policy" {
           "s3:GetObjectVersion",
         ],
         "Resource" : [
-          "${aws_s3_bucket.bucket.arn}/coinlore/processed/*",
-          "${aws_s3_bucket.bucket.arn}/reddit/processed/*",
+          "${aws_s3_bucket.data_bucket.arn}/coinlore/processed/*",
+          "${aws_s3_bucket.data_bucket.arn}/reddit/processed/*",
         ]
       },
       {
@@ -187,7 +187,7 @@ resource "aws_iam_policy" "snowpipe_s3_policy" {
           "s3:GetBucketLocation",
         ],
         "Resource" : [
-          "${aws_s3_bucket.bucket.arn}",
+          "${aws_s3_bucket.data_bucket.arn}",
         ],
         "Condition" : {
           "StringLike" : {
@@ -203,7 +203,7 @@ resource "aws_iam_policy" "snowpipe_s3_policy" {
 }
 
 #Attach policy for Snowpipe
-resource "aws_iam_role_policy_attachment" "snowpipe_policy_attachment" {
-  role       = aws_iam_role.iam_snowpipe_role.name
-  policy_arn = aws_iam_policy.snowpipe_s3_policy.arn
+resource "aws_iam_role_policy_attachment" "snowpipe" {
+  role       = aws_iam_role.snowpipe.name
+  policy_arn = aws_iam_policy.snowpipe_s3.arn
 }

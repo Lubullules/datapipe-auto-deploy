@@ -1,15 +1,12 @@
 terraform {
   required_providers {
     snowflake = {
-      source  = "Snowflake-Labs/snowflake"
+      source  = "snowflakedb/snowflake"
       version = "~> 1.0.5"
-    }
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
     }
   }
 }
+
 provider "snowflake" {
   organization_name = var.snowflake_org_name
   account_name      = var.snowflake_account_name

@@ -1,5 +1,5 @@
-resource "aws_ecr_repository" "lambda_repo" {
-  name = "${var.project_name}-${var.env}-lambda-container-image"
+resource "aws_ecr_repository" "lambda" {
+  name = "${local.project_acronym_lower}-${var.env}-lambda-container-image"
 
   force_delete = true
 }

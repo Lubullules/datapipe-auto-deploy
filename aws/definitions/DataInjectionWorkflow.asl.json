@@ -6,7 +6,7 @@
       "Type": "Pass",
       "Next": "Parallel",
       "Assign": {
-        "wf_timestamp": "{% $now() %}"
+        "pipeline_timestamp": "{% $now() %}"
       }
     },
     "Parallel": {
@@ -23,7 +23,7 @@
               "Arguments": {
                 "FunctionName": "${get_data_from_coinlore_api_arn}",
                 "Payload": {
-                  "wf_timestamp": "{% $wf_timestamp %}"
+                  "pipeline_timestamp": "{% $pipeline_timestamp %}"
                 }
               },
               "Retry": [
@@ -49,7 +49,7 @@
               "Arguments": {
                 "FunctionName": "${process_coinlore_data_arn}",
                 "Payload": {
-                  "wf_timestamp": "{% $wf_timestamp %}"
+                  "pipeline_timestamp": "{% $pipeline_timestamp %}"
                 }
               },
               "Retry": [
@@ -80,7 +80,7 @@
               "Arguments": {
                 "FunctionName": "${get_data_from_reddit_api_arn}",
                 "Payload": {
-                  "wf_timestamp": "{% $wf_timestamp %}"
+                  "pipeline_timestamp": "{% $pipeline_timestamp %}"
                 }
               },
               "Retry": [
@@ -110,7 +110,7 @@
       "Arguments": {
         "FunctionName": "${process_reddit_data_arn}",
         "Payload": {
-          "wf_timestamp": "{% $wf_timestamp %}"
+          "pipeline_timestamp": "{% $pipeline_timestamp %}"
         }
       },
       "Retry": [

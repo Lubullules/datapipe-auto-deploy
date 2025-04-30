@@ -14,9 +14,9 @@ BUCKET_NAME = os.getenv("BUCKET_NAME")
 # Variables d'environnement pour Reddit
 reddit_username = os.getenv("reddit_username")
 reddit_password = os.getenv("reddit_password")
-user_agent = os.getenv("user_agent")
-client_id = os.getenv("client_id")
-client_secret = os.getenv("client_secret")
+user_agent = os.getenv("reddit_user_agent")
+client_id = os.getenv("reddit_client_id")
+client_secret = os.getenv("reddit_client_secret")
 
 def safe_convert(value):
     if isinstance(value, (dict, list, tuple)) or isinstance(value, np.ndarray):
@@ -81,11 +81,11 @@ def lambda_handler(event, context):
         df = df.applymap(safe_convert)
 
         # ----- Étape 4 : Génération du nom de fichier avec timestamp -----
-        timestamp = event.get("wf_timestamp")
-        df["wf_timestamp"] = timestamp
+        timestamp = event.get("pipeline_timestamp")
+        df["pipeline_timestamp"] = timestamp
 
         # ----- Étape 5 : Sauvegarde dans S3 -----
-        wr.s3.to_parquet(df=df, path=f"s3://{BUCKET_NAME}/reddit/raw/", dataset=True, partition_cols=["wf_timestamp"], index=False)
+        wr.s3.to_parquet(df=df, path=f"s3://{BUCKET_NAME}/reddit/raw/", dataset=True, partition_cols=["pipeline_timestamp"], index=False)
 
 
         return {

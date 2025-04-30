@@ -1,15 +1,14 @@
 #TODO: Add a description of the purpose of this file and the resources
 
 #Resource allocation for AWS S3 bucket
-resource "aws_s3_bucket" "bucket" {
-  bucket        = "${var.project_name}-${var.env}-${var.region}"
+resource "aws_s3_bucket" "data_bucket" {
+  bucket        = "${var.project_name}-${var.env}-${var.aws_region}"
   force_destroy = true
 }
 
 resource "aws_s3_bucket_logging" "data_bucket" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.data_bucket.id
 
-  #TODO: var the base bucket name
-  target_bucket = "aws-s3-base-bucket-project-test"
-  target_prefix = "${aws_s3_bucket.bucket.id}_logs/"
+  target_bucket = var.base_bucket
+  target_prefix = "${aws_s3_bucket.data_bucket.id}_logs/"
 }
