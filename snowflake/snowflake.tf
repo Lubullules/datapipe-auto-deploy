@@ -9,8 +9,21 @@ resource "snowflake_database" "database" {
   name = "${local.project_acronym_upper}_${local.env_capped}_DATABASE"
 }
 
-resource "snowflake_schema" "schema" {
-  name       = "${local.project_acronym_upper}_${local.env_capped}_SCHEMA"
+# 3 schemas for layers
+resource "snowflake_schema" "loading_schema" {
+  name       = "${local.project_acronym_upper}_${local.env_capped}_LOADING_SCHEMA"
+  database   = snowflake_database.database.name
+  depends_on = [snowflake_grant_database_role.tf-snow-role]
+}
+
+resource "snowflake_schema" "staging_schema" {
+  name       = "${local.project_acronym_upper}_${local.env_capped}_STAGING_SCHEMA"
+  database   = snowflake_database.database.name
+  depends_on = [snowflake_grant_database_role.tf-snow-role]
+}
+
+resource "snowflake_schema" "working_schema" {
+  name       = "${local.project_acronym_upper}_${local.env_capped}_WORKING_SCHEMA"
   database   = snowflake_database.database.name
   depends_on = [snowflake_grant_database_role.tf-snow-role]
 }
@@ -18,7 +31,7 @@ resource "snowflake_schema" "schema" {
 resource "snowflake_table" "coinlore" {
   name     = "${local.project_acronym_upper}_${local.env_capped}_COINLORE_TABLE"
   database = snowflake_database.database.name
-  schema   = snowflake_schema.schema.name
+  schema   = snowflake_schema.loading_schema.name
 
   depends_on = [snowflake_grant_database_role.tf-snow-role]
 
@@ -106,7 +119,7 @@ resource "snowflake_table" "coinlore" {
 resource "snowflake_table" "reddit" {
   name     = "${local.project_acronym_upper}_${local.env_capped}_REDDIT_TABLE"
   database = snowflake_database.database.name
-  schema   = snowflake_schema.schema.name
+  schema   = snowflake_schema.loading_schema.name
 
   depends_on = [snowflake_grant_database_role.tf-snow-role]
 

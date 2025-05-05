@@ -1,7 +1,7 @@
 resource "snowflake_file_format" "parquet_file_format" {
   name        = "PARQUET_FILE_FORMAT"
   database    = snowflake_database.database.name
-  schema      = snowflake_schema.schema.name
+  schema      = snowflake_schema.loading_schema.name
   format_type = "PARQUET"
   compression = "SNAPPY"
 
@@ -28,7 +28,7 @@ resource "snowflake_execute" "s3_integration_update" {
 resource "snowflake_stage" "coinlore_data" {
   name                = "COINLORE_DATA_STAGE"
   database            = snowflake_database.database.name
-  schema              = snowflake_schema.schema.name
+  schema              = snowflake_schema.loading_schema.name
   storage_integration = snowflake_storage_integration.s3_integration.name
   url                 = "s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/coinlore/processed/"
   file_format         = "FORMAT_NAME = ${snowflake_file_format.parquet_file_format.fully_qualified_name}"
@@ -39,7 +39,7 @@ resource "snowflake_stage" "coinlore_data" {
 resource "snowflake_pipe" "coinlore_data" {
   name              = "COINLORE_DATA_PIPE"
   database          = snowflake_database.database.name
-  schema            = snowflake_schema.schema.name
+  schema            = snowflake_schema.loading_schema.name
   copy_statement    = "COPY INTO ${snowflake_table.coinlore.fully_qualified_name} FROM @${snowflake_stage.coinlore_data.fully_qualified_name} FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = 'CASE_INSENSITIVE'"
   auto_ingest       = true
   aws_sns_topic_arn = data.terraform_remote_state.aws.outputs.sns_coinlore_topic_arn
@@ -52,7 +52,7 @@ resource "snowflake_pipe" "coinlore_data" {
 resource "snowflake_stage" "reddit_data" {
   name                = "REDDIT_DATA_STAGE"
   database            = snowflake_database.database.name
-  schema              = snowflake_schema.schema.name
+  schema              = snowflake_schema.loading_schema.name
   storage_integration = snowflake_storage_integration.s3_integration.name
   url                 = "s3://${data.terraform_remote_state.aws.outputs.s3_bucket_name}/reddit/processed/"
   file_format         = "FORMAT_NAME = ${snowflake_file_format.parquet_file_format.fully_qualified_name}"
@@ -63,7 +63,7 @@ resource "snowflake_stage" "reddit_data" {
 resource "snowflake_pipe" "reddit_data" {
   name              = "REDDIT_DATA_PIPE"
   database          = snowflake_database.database.name
-  schema            = snowflake_schema.schema.name
+  schema            = snowflake_schema.loading_schema.name
   copy_statement    = "COPY INTO ${snowflake_table.reddit.fully_qualified_name} FROM @${snowflake_stage.reddit_data.fully_qualified_name} FILE_FORMAT = (TYPE = 'PARQUET') MATCH_BY_COLUMN_NAME = 'CASE_INSENSITIVE'"
   auto_ingest       = true
   aws_sns_topic_arn = data.terraform_remote_state.aws.outputs.sns_reddit_topic_arn
