@@ -111,6 +111,35 @@ Each environment has its own Snowflake schema and AWS resources.
 
 ---
 
+## TODO
+
+### v1.x
+
+- [ ] Trigger rebuild of the docker image when changes to the py func or dockerfile
+- [ ] Use of Terraform modules and overall refactoring
+- [ ] Rewrite and refactor the Lambda functions
+- [ ] Error handling in the Lambda functions
+- [ ] Variabilisation of the layers used in the Lambda functions because of region-lock
+
+### v2
+
+- [ ] Multiply the data sources on the text side (other subreddits...)
+
+#### Data Engineering
+
+- [ ] Use other methods to extract and load data (AWS Glue, AWS Data Pipeline, AWS Batch)
+- [ ] Compare performance of different methods
+
+#### Data Science
+
+- [ ] Improve the recognition of cryptocurrency names and tickers in texts with Named Entity Recognition (NER) and/or other NLP techniques
+- [ ] Use of more advanced sentiment analysis techniques (e.g. BERT, RoBERTa, etc.)
+
+#### Data Analysis
+
+- [ ] More visualisations on the data
+- [ ] Use of Grafana to visualise the data in a IaC environment
+
 ## 🛠️ Troubleshooting  
 
 ### 📌 Topic Subscription Issue  
@@ -136,6 +165,11 @@ Check pipe status and any load errors.
 ---
 
 ## ✍️ Personal Reflections  
+
+### 🛡️ Security
+
+  A whole lot of permissions are broadly given, we should carefully analyse and maybe reduce the scope of the permissions given to the roles managed by Terraform.
+  We have not looked at the security of the data in transit and at rest (bucket encryption...). Our data is not sensitive but we should have a look at it.
 
 ### ⚙️ Issues Faced  
 
