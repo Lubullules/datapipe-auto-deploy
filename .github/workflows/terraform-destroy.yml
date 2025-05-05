@@ -35,7 +35,7 @@ jobs:
       #Terraform initialisation 
       - name: Load environment variables
         id: load-vars
-        run: source .env.github && echo "Loaded .env.github"
+        run: source .config/.env.github && echo "Loaded config from .env.github"
 
       - name: Terraform init
         id: init
@@ -118,7 +118,7 @@ jobs:
       #Terraform initialisation 
       - name: Load environment variables
         id: load-vars
-        run: source .env.github && echo "Loaded .env.github"
+        run: source .config/.env.github && echo "Loaded config from .env.github"
 
       - name: Terraform init
         id: init
