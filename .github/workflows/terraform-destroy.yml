@@ -41,7 +41,7 @@ jobs:
         id: init
         env:
           AWS_TF_STATE_KEY: aws_${{ env.ENV }}/terraform.tfstate
-        run: terraform init  -backend-config="$AWS_REGION" -backend-config="bucket=$BASE_BUCKET" -backend-config="key=$AWS_TF_STATE_KEY"
+        run: terraform init  -backend-config="region=$AWS_REGION" -backend-config="bucket=$BASE_BUCKET" -backend-config="key=$AWS_TF_STATE_KEY"
   
       - name: Terraform format
         id: fmt
