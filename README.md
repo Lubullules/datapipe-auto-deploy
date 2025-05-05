@@ -2,7 +2,7 @@
 
 # Data Engineering Project - Hands-on Training
 
-*Objective: Develop a complete data pipeline for collection, transformation, and visualization to gain expertise in AWS, Snowflake, DBT, and Terraform.*
+*Objective: Develop a complete data pipeline for collection, transformation, and visualization to gain expertise in AWS, Snowflake, Github Actions and Terraform.*
 
 ⸻
 
@@ -11,23 +11,45 @@
 
 #### Data Flow
 
-1. **Collection**: Retrieve raw data from a public API.
-2. **Transformation & Cleaning**: Process data using AWS Step Functions, Lambda, and Jsonata.
+1. **Collection**: Retrieve raw data from public APIs.
+2. **Transformation & Cleaning**: Process data using AWS Step Functions and Lambda.
 3. **Storage & Ingestion**: Store cleaned data in an S3 bucket and ingest it into Snowflake via Snowpipe.
-4. **Advanced Transformation**: DBT transforms data between landing and staging schemas.
-5. **Data Exposure**: A final schema (exposed) consolidates data ready for analysis.
-6. **Visualization**: Create dashboards using Tableau.
-7. **Deployment & Automation**: Use Terraform to manage AWS and Snowflake, with GitHub for source code.
+4. **Data Exposure**: A final schema (exposed) consolidates data ready for analysis.
+5. **Visualization**: Create dashboards using Tableau or other data vizualisation tools.
+6. **Deployment & Automation**: Use Terraform to manage AWS and Snowflake, with GitHub for source code. Deployement is automated using GitHub Actions.
 
 ⸻
 
 ### 2. Project Organization
 
 - **Mono-repository GitHub**: A single structured repo with dedicated folders:
-  - `terraform/` → AWS and Snowflake infrastructure
-  - `etl/` → Lambda and Step Functions code
-  - `dbt/` → DBT transformation projects
-  - `tableau/` → Workbooks and data sources
+  - `.github/workflows/` → CI/CD pipelines for Terraform and DBT
+  - `.local/` → Local configuration files for development and testing
+  - `aws/` → Contains all AWS resources and configurations
+    - `.config/` → Specification on which environment to deploy
+    - `definitions/` → Code source for lambdas and definition of step functions
+    - `backend.tf` → Terraform backend configuration
+    - `data.tf` → Terraform data sources for AWS resources
+    - `docker.tf` → Command to build and push Docker images to ECR
+    - `ecr-repo.tf` → Terraform ECR repository configuration
+    - `event-bridge.tf` → EventBridge rules for scheduling
+    - `iam.tf` → IAM roles and policies for AWS resources
+    - `lambda.tf` → Lambda function configuration
+    - `output.tf` → Terraform output variables
+    - `provider.tf` → AWS provider configuration
+    - `s3.tf` → S3 bucket configuration
+    - `sns.tf` → SNS topic configuration
+    - `step-functions.tf` → Step Functions configuration
+    - `variables.tf` → Terraform input variables
+  - `snowflake/` → Contains all Snowflake resources and configurations
+    - `.config/` → Specification on which environment to deploy
+    - `backend.tf` → Snowflake backend configuration
+    - `pipe.tf` → Snowpipe configuration
+    - `privileges.tf` → Snowflake privileges configuration
+    - `providers.tf` → Snowflake provider configuration
+    - `remote-state.tf` → Remote state configuration for Snowflake
+    - `snowflake.tf` → Snowflake resources configuration
+    - `variables.tf` → Snowflake input variables
 - **Environments**: Dev and Prod are separated, each with its own Snowflake schema and dedicated AWS resources.
 
 ⸻
@@ -36,19 +58,19 @@
 
 #### Data Collection
 
-- **Selected public API**: [To be defined, e.g., OpenWeather, CoinGecko]
-- **Data format**: JSON
-- **Authentication**: API key stored in AWS Secrets Manager
-- **Frequency**: Hourly extraction using AWS EventBridge + Lambda
+- **Selected public API**: [Coinlore](https://www.coinlore.com/cryptocurrency-data-api) and [Reddit API](https://www.reddit.com/dev/api/)
+- **Data format**: JSON and parquet
+- **Authentication**: API key stored in GitHub secrets
+- **Frequency**: 10min extraction using AWS EventBridge + Lambda
 
 #### Data Processing & Cleaning (ETL)
 
-- **Technologies**: AWS Step Functions orchestrating Lambdas with Jsonata
+- **Technologies**: AWS Step Functions in Jsonata orchestrating Lambdas and python with use of pandas, nltk and awswrangler
 - **Applied transformations**:
+  - Added unique timestamps for each record and for each API call
   - Removing unnecessary columns
-  - Normalizing date formats
-  - Filtering out outliers
   - Checking for null values
+  - Snetiment analysis on Reddit comments using NLTK
 - **Storage in S3**:
   - **Format**: Parquet
   - **Partitioning**: `year=/month=/day=`
@@ -57,22 +79,8 @@
 #### Ingestion into Snowflake
 
 - **Snowpipe** for automatic ingestion when a file arrives in S3
-- **Landing schema** to store raw data
+- **Loading schema** to store raw data
 - **Ingestion policy**: Append-only with timestamp
-
-#### Transformation with DBT
-
-- **Staging schema**:
-  - Data type normalization
-  - Deduplication and primary key management
-  - Adding metadata (ingestion date, source)
-- **Exposed schema**:
-  - Aggregations and key metrics
-  - DBT models with materialized views
-  - User access management
-  - Data quality testing
-  - **DBT tests** (not null, unique, accepted values)
-  - **DBT snapshots** to track changes
 
 #### Visualization with Tableau
 
@@ -87,7 +95,6 @@
 - **Infrastructure as Code with Terraform**
 - **AWS resource provisioning** (Lambda, Step Functions, S3, Snowpipe)
 - **Snowflake schema and table configuration**
-- **DBT deployment in Snowflake**
 - **Monitoring & Alerting**:
   - **Logs**: CloudWatch for Step Functions and Lambda
   - **Alerts**: AWS SNS for failure notifications
