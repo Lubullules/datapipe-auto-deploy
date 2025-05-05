@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  ENV_FILE: .config/.env.${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+  ENV: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
   # verbosity setting for Terraform logs
   TF_LOG: INFO
   # Credentials for deployment to AWS
@@ -35,14 +35,13 @@ jobs:
       #Terraform initialisation 
       - name: Load environment variables
         id: load-vars
-        run: source $ENV_FILE && echo "Loaded $ENV_FILE"
+        run: source .env.github && echo "Loaded .env.github"
 
       - name: Terraform init
         id: init
         env:
-          BUCKET_TF_STATE: ${{ env.BUCKET_TF_STATE }}
-          KEY_TF_STATE: ${{ env.KEY_TF_STATE }}
-        run: terraform init  -backend-config="region=eu-west-1" -backend-config="bucket=$BUCKET_TF_STATE" -backend-config="key=$KEY_TF_STATE"
+          AWS_TF_STATE_KEY: aws_${{ env.ENV }}/terraform.tfstate
+        run: terraform init  -backend-config="$AWS_REGION" -backend-config="bucket=$BASE_BUCKET" -backend-config="key=$AWS_TF_STATE_KEY"
   
       - name: Terraform format
         id: fmt
@@ -56,6 +55,13 @@ jobs:
       - name: Terraform planning
         id: plan
         run: terraform plan -destroy -out aws_destroy-planfile
+        env:
+          TF_VAR_snowflake_aws_user_arn: ${{ secrets.SNOWFLAKE_AWS_USER_ARN }}
+
+          TF_VAR_reddit_username: ${{ secrets.REDDIT_USERNAME }}
+          TF_VAR_reddit_password: ${{ secrets.REDDIT_PASSWORD }}
+          TF_VAR_reddit_client_id: ${{ secrets.REDDIT_CLIENT_ID }}
+          TF_VAR_reddit_client_secret: ${{ secrets.REDDIT_CLIENT_SECRET }}
         continue-on-error: false    
 
       #Manual approval before applying plan
@@ -82,6 +88,13 @@ jobs:
       #Terraform applying
       - name: Terraform applying
         id: apply
+        env:
+          TF_VAR_snowflake_aws_user_arn: ${{ secrets.SNOWFLAKE_AWS_USER_ARN }}
+
+          TF_VAR_reddit_username: ${{ secrets.REDDIT_USERNAME }}
+          TF_VAR_reddit_password: ${{ secrets.REDDIT_PASSWORD }}
+          TF_VAR_reddit_client_id: ${{ secrets.REDDIT_CLIENT_ID }}
+          TF_VAR_reddit_client_secret: ${{ secrets.REDDIT_CLIENT_SECRET }}
         run: terraform apply aws_destroy-planfile
 
   # Destroying Snowflake infrastructure
@@ -105,14 +118,13 @@ jobs:
       #Terraform initialisation 
       - name: Load environment variables
         id: load-vars
-        run: source $ENV_FILE && echo "Loaded $ENV_FILE"
+        run: source .env.github && echo "Loaded .env.github"
 
       - name: Terraform init
         id: init
         env:
-          BUCKET_TF_STATE: ${{ env.BUCKET_TF_STATE }}
-          KEY_TF_STATE: ${{ env.KEY_TF_STATE }}
-        run: terraform init  -backend-config="region=eu-west-1" -backend-config="bucket=$BUCKET_TF_STATE" -backend-config="key=$KEY_TF_STATE"
+          SNOWFLAKE_TF_STATE_KEY: snowflake_${{ env.ENV }}/terraform.tfstate
+        run: terraform init  -backend-config="region=$AWS_REGION" -backend-config="bucket=$BASE_BUCKET" -backend-config="key=$SNOWFLAKE_TF_STATE_KEY"
   
       - name: Terraform format
         id: fmt
@@ -128,6 +140,8 @@ jobs:
         run: terraform plan -destroy -out snowflake_destroy-planfile
         continue-on-error: false    
         env:
+          TF_VAR_aws_tf_state_key: aws_${{ env.ENV }}/terraform.tfstate
+
           TF_VAR_snowflake_private_key: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
 
       #Manual approval before applying plan
@@ -156,4 +170,6 @@ jobs:
         id: apply
         run: terraform apply snowflake_destroy-planfile
         env:
+          TF_VAR_aws_tf_state_key: aws_${{ env.ENV }}/terraform.tfstate
+
           TF_VAR_snowflake_private_key: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
