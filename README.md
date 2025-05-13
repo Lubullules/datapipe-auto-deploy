@@ -7,6 +7,27 @@
 
 ---
 
+## User Guide
+
+### 🛠️ Prerequisites
+
+- **AWS Account**: Access to AWS resources
+  - Create a new IAM user with administrator access
+  - Create a S3 bucket that will serve as the backend for Terraform and the logs of the data bucket
+- **Snowflake Account**: Access to Snowflake resources
+  - Run the SQL script `snowflake/setup.sql` as `ACCOUNT_ADMIN` to create a user and a role for the project
+  - The script will create a dummy storage integration for the purpose of retrieving the AWS user associated with your Snowflake account, store this value (if you missed it, go check in the query history)
+  - Create a key pair for the Snowflake user
+- **Reddit Account**: Access to Reddit API
+  - Create a Reddit account
+  - Create a Reddit app to get the client ID and secret [here](https://www.reddit.com/prefs/apps)
+  
+### For Local Deployment
+
+### For deployment with Github Actions
+
+---
+
 ## 🗺️ Architecture & Technologies  
 
 ### 📡 Data Flow  
@@ -60,33 +81,42 @@ Each environment has its own Snowflake schema and AWS resources.
 
 ### 📥 Data Collection  
 
-| Public API              | Data Format | Authentication | Frequency |
-|:------------------------|:------------|:----------------|:------------|
-| [Coinlore](https://www.coinlore.com/cryptocurrency-data-api) | JSON | GitHub Secrets | 10 min |
-| [Reddit API](https://www.reddit.com/dev/api/) | JSON | GitHub Secrets | 10 min |
+| Public API              | Data Format | Authentication | Content Type |
+|:------------------------|:------------|:---------------|
+| [Coinlore](https://www.coinlore.com/cryptocurrency-data-api) | JSON | No auth | Data on the Top 1000 cryptocurrencies by market cap |
+| [Reddit API](https://www.reddit.com/dev/api/) | JSON | Account Credentials + API Token | Last 50 Posts from r/cryptocurrency
 
-- **Storage Format:** Parquet  
-- **Partitioning:** `year=/month=/day=`  
+- **Retrieval Frequency**: Every 10 minutes
+- **Storage Format:** Parquet
+- **Partitioning:** `timestamp=YYYY-MM-DDTHH:MM:SS.000Z`
 
 ---
 
 ### 🧹 Data Processing (ETL)
 
-- **Technologies:** AWS Step Functions orchestrating Python Lambdas
+- **Technologies:** AWS Step Function orchestrating Python Lambdas
 - **Libraries:** `pandas`, `nltk`, `awswrangler`
 - **Transformations Applied:**
   - Added timestamps
   - Removed irrelevant columns
   - Handled null values
-  - Performed Reddit comment sentiment analysis with NLTK
-- **File naming:** `dataset_YYYYMMDD_HHMM.parquet`
+  - On Reddit Data:
+    - Cross-reference with Coinlore list of cryptocurrencies
+    - Detection of cryptocurrency mentions in texts and titles
+    - Sentiment analysis on titles and texts, scoring from -1 to 1
+    - Count of mentions per cryptocurrency
+    - Average sentiment score per cryptocurrency
+  
 
 ---
 
 ### ⬆️ Ingestion into Snowflake  
 
 - **Snowpipe:** Automatic ingestion from S3  
-- **Schema:** Raw → Exposed  
+- **Schemas:** 
+  - `LOADING`: Raw data
+  - `STAGING`: Work in progress
+  - `WORKING`: Data ready for exposure
 - **Policy:** Append-only with timestamp  
 
 ---
@@ -103,11 +133,10 @@ Each environment has its own Snowflake schema and AWS resources.
 
 - **Infrastructure as Code:** Terraform  
 - AWS and Snowflake provisioning  
-- CI/CD via GitHub Actions  
+- CI/CD via GitHub Actions or local bash scripts
 - **Monitoring:**
-  - Logs: CloudWatch
-  - Notifications: SNS
-  - Snowpipe status tracking  
+  - AWS CloudWatch for logs of Lambda functions
+  - Snowflake: Query history and task history
 
 ---
 
@@ -120,10 +149,12 @@ Each environment has its own Snowflake schema and AWS resources.
 - [ ] Rewrite and refactor the Lambda functions
 - [ ] Error handling in the Lambda functions
 - [ ] Variabilisation of the layers used in the Lambda functions because of region-lock
+- [ ] Pass Approvers of Github Actions workflow as variables
+- [ ] Explicitly declare the AWS credentials in the local config
 
 ### v2
 
-- [ ] Multiply the data sources on the text side (other subreddits...)
+- [ ] Add data sources on the text side (other subreddits...)
 
 #### Data Engineering
 
