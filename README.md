@@ -28,8 +28,8 @@
 - **Docker**: Install Docker
 - **AWS CLI**: Install AWS CLI and configure with the credentials of the IAM user created in the prerequisites
 
-- **Variables**: Fill in the `.env.local` file with the corresponding values
-- **Scripts**: Run the `localterraformdeploy.sh` script to deploy the infrastructure locally or the `localterraformdestroy.sh` script to destroy the infrastructure locally
+- **Variables**: Fill in the `.local/.env.local` file with the corresponding values
+- **Scripts**: Run the `.local/terraform.sh` script to deploy the infrastructure locally or the `.local/terraform-destroy.sh` script to destroy the infrastructure locally
 
 ### For deployment with Github Actions
 
