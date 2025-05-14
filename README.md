@@ -33,7 +33,11 @@
 
 ### For deployment with Github Actions
 
+- **GitHub Repository**: Create a new GitHub repository, push the code to it and enable GitHub Actions in your repository
+
 - **Workflows**: The workflows are located in the `.github/workflows` folder. The `terraform.yml` workflow is used to deploy the infrastructure and the `terraform-destroy.yml` workflow is used to destroy the infrastructure. There are 2 manual approval steps for both workflows
+
+- **Personal Access Token**: Create a personal access token as shown [here](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) with the `repo` scope. It will be used to write issues in the repository for the manual approval steps
 
 - **Secrets**: Create the following secrets in your GitHub repository:
   - `AWS_ACCESS_KEY_ID`: AWS access key ID
@@ -48,6 +52,7 @@
 
 - **Variables**: Create the following variables in your GitHub repository:
   - `PROJECT_NAME`: Name of the project (kebab-case)
+  - `APPROVERS`: List of GitHub usernames of the approvers for the manual approval steps
   - `TF_STATE_BASE_BUCKET`: Name of the S3 bucket for the Terraform state (kebab-case, must be unique in the region, test in local before)
   - `AWS_REGION`: AWS region
   - `AWS_ACCOUNT_ID`: AWS account ID
@@ -177,7 +182,6 @@ Each environment has its own Snowflake schema and AWS resources.
 - [ ] Rewrite and refactor the Lambda functions
 - [ ] Error handling in the Lambda functions
 - [ ] Variabilisation of the layers used in the Lambda functions because of region-lock
-- [ ] Pass Approvers of Github Actions workflow as variables
 - [ ] Explicitly declare the AWS credentials in the local config
 
 ### v2

@@ -41,7 +41,7 @@ jobs:
         id: init
         env:
           AWS_TF_STATE_KEY: aws_${{ env.ENV }}/terraform.tfstate
-        run: terraform init  -backend-config="region=$AWS_REGION" -backend-config="bucket=$BASE_BUCKET" -backend-config="key=$AWS_TF_STATE_KEY"
+        run: terraform init  -backend-config="region=$AWS_REGION" -backend-config="bucket=$TF_STATES_BASE_BUCKET_NAME" -backend-config="key=$AWS_TF_STATE_KEY"
   
       - name: Terraform format
         id: fmt
@@ -71,7 +71,7 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{secrets.ISSUE_WRITING_TOKEN}}
-          approvers: NAPondu, Aradjin
+          approvers: ${{ vars.APPROVERS }}
           minimum-approvals: 1
           issue-title: "Destroying AWS terraform infrastructure"
           issue-body: "Please approve or deny the destruction of the terraform infrastructure"
@@ -124,7 +124,7 @@ jobs:
         id: init
         env:
           SNOWFLAKE_TF_STATE_KEY: snowflake_${{ env.ENV }}/terraform.tfstate
-        run: terraform init  -backend-config="region=$AWS_REGION" -backend-config="bucket=$BASE_BUCKET" -backend-config="key=$SNOWFLAKE_TF_STATE_KEY"
+        run: terraform init  -backend-config="region=$AWS_REGION" -backend-config="bucket=$TF_STATES_BASE_BUCKET_NAME" -backend-config="key=$SNOWFLAKE_TF_STATE_KEY"
   
       - name: Terraform format
         id: fmt
@@ -151,7 +151,7 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{secrets.ISSUE_WRITING_TOKEN}}
-          approvers: NAPondu, Aradjin
+          approvers: ${{ vars.APPROVERS }}
           minimum-approvals: 1
           issue-title: "Destroying Snowflake terraform infrastructure"
           issue-body: "Please approve or deny the destruction of the terraform infrastructure"
