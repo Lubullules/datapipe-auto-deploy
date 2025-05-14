@@ -1,3 +1,4 @@
+# Terraform configuration for building and pushing a Docker image to AWS ECR
 resource "null_resource" "build_and_push_docker_image" {
   provisioner "local-exec" {
     command = <<EOT
