@@ -24,7 +24,35 @@
   
 ### For Local Deployment
 
+- **Terraform**: Install Terraform CLI
+- **Docker**: Install Docker
+- **AWS CLI**: Install AWS CLI and configure with the credentials of the IAM user created in the prerequisites
+
+- **Variables**: Fill in the `.env.local` file with the corresponding values
+- **Scripts**: Run the `localterraformdeploy.sh` script to deploy the infrastructure locally or the `localterraformdestroy.sh` script to destroy the infrastructure locally
+
 ### For deployment with Github Actions
+
+- **Workflows**: The workflows are located in the `.github/workflows` folder. The `terraform.yml` workflow is used to deploy the infrastructure and the `terraform-destroy.yml` workflow is used to destroy the infrastructure. There are 2 manual approval steps for both workflows
+
+- **Secrets**: Create the following secrets in your GitHub repository:
+  - `AWS_ACCESS_KEY_ID`: AWS access key ID
+  - `AWS_SECRET_ACCESS_KEY`: AWS secret access key
+  - `SNOWFLAKE_PRIVATE_KEY`: Snowflake private key (base64 encoded)
+  - `SNOWFLAKE_AWS_USER_ARN`: ARN of the AWS user associated with your Snowflake account
+  - `REDDIT_USERNAME`: Reddit username
+  - `REDDIT_PASSWORD`: Reddit password
+  - `REDDIT_CLIENT_ID`: Reddit client ID
+  - `REDDIT_CLIENT_SECRET`: Reddit client secret
+  - `ISSUE_WRITING_TOKEN`: Token for writing issues to the repository (for manual approval steps)
+
+- **Variables**: Create the following variables in your GitHub repository:
+  - `PROJECT_NAME`: Name of the project (kebab-case)
+  - `TF_STATE_BASE_BUCKET`: Name of the S3 bucket for the Terraform state (kebab-case, must be unique in the region, test in local before)
+  - `AWS_REGION`: AWS region
+  - `AWS_ACCOUNT_ID`: AWS account ID
+  - `SNOWFLAKE_ORG_NAME`: Snowflake organization name
+  - `SNOWFLAKE_ACCOUNT_NAME`: Snowflake account name
 
 ---
 
