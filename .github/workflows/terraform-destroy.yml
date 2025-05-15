@@ -77,7 +77,7 @@ jobs:
         id: approve
         uses: trstringer/manual-approval@v1
         with:
-          secret: ${{ github.TOKEN }}
+          secret: ${{ secrets.ISSUE_WRITING_TOKEN }}
           approvers: ${{ vars.APPROVERS }}
           minimum-approvals: 1
           issue-title: "Destroying AWS terraform infrastructure"
@@ -154,7 +154,7 @@ jobs:
         id: approve
         uses: trstringer/manual-approval@v1
         with:
-          secret: ${{ github.TOKEN }}
+          secret: ${{ secrets.ISSUE_WRITING_TOKEN }}
           approvers: ${{ vars.APPROVERS }}
           minimum-approvals: 1
           issue-title: "Destroying Snowflake terraform infrastructure"
