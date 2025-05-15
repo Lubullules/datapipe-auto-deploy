@@ -24,8 +24,6 @@ jobs:
       run:
         shell: bash
         working-directory: ./aws
-    permissions:
-      issues: write
     
     env:
       AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
@@ -105,8 +103,6 @@ jobs:
       run:
         shell: bash
         working-directory: ./snowflake
-    permissions:
-      issues: write
 
     env:
       SNOWFLAKE_ORG_NAME: ${{ vars.SNOWFLAKE_ORG_NAME }}
