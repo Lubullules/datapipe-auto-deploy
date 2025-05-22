@@ -1,5 +1,5 @@
 resource "aws_sns_topic" "snowpipe_coinlore" {
-  name_prefix = "${local.project_acronym_lower}-snowpipe-coinlore-topic"
+  name_prefix = "${local.project_acronym_lower}-snowpipe-coinlore-topic-"
 }
 
 resource "aws_sns_topic_policy" "snowpipe_coinlore" {
@@ -40,7 +40,7 @@ resource "aws_sns_topic_policy" "snowpipe_coinlore" {
 }
 
 resource "aws_sns_topic" "snowpipe_reddit" {
-  name_prefix = "${local.project_acronym_lower}-snowpipe-reddit-topic"
+  name_prefix = "${local.project_acronym_lower}-snowpipe-reddit-topic-"
 }
 
 resource "aws_sns_topic_policy" "snowpipe_reddit" {
@@ -94,4 +94,6 @@ resource "aws_s3_bucket_notification" "snowpipe_sns" {
     events        = ["s3:ObjectCreated:*"]
     filter_prefix = "reddit/processed/"
   }
+
+  depends_on = [aws_sns_topic_policy.snowpipe_coinlore, aws_sns_topic_policy.snowpipe_reddit]
 }
