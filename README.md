@@ -1,5 +1,5 @@
 
-# 📊 finance-DE-lab
+# 📊 datapipe-auto-deploy
 
 ## 🎯 Data Engineering Project - Hands-on Training  
 
